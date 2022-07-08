@@ -82,7 +82,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
 
     @OnClick(R.id.btn_start)
     void startPlay() {
-        startPlay(0);
+        startPlay(-1);
     }
 
     /**
@@ -98,7 +98,9 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
             setState(STATE_START);
         } else {
             // 本次播放
-            mediaPlayer.seekTo(startTime);
+            if (startTime > 0) {
+                mediaPlayer.seekTo(startTime);
+            }
             mediaPlayer.start();
             secondTimer.startLoopTimer(TIME_SECOND);
             setState(STATE_PAUSE);
