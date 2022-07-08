@@ -45,7 +45,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
     private MyTimer secondTimer; // 秒级任务
     private boolean isPrepared; // 初始化成功
 
-    private OnCompleteListener onCompleteListener;
+    private OnStateChangeListener onStateChangeListener;
 
     Handler handler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -57,9 +57,9 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
         }
     };
 
-    public AudioPlayer(Activity activity, View rootView, OnCompleteListener onCompleteListener) {
+    public AudioPlayer(Activity activity, View rootView, OnStateChangeListener onCompleteListener) {
         this.activity = activity;
-        this.onCompleteListener = onCompleteListener;
+        this.onStateChangeListener = onCompleteListener;
         ButterKnife.bind(this, rootView);
 
         seekBar.setOnSeekBarChangeListener(seekBarChangeListener);
@@ -96,6 +96,8 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
             // 本次暂停
             mediaPlayer.pause();
             setState(STATE_START);
+
+            onStateChangeListener.pause();
         } else {
             // 本次播放
             if (startTime > 0) {
@@ -104,6 +106,8 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
             mediaPlayer.start();
             secondTimer.startLoopTimer(TIME_SECOND);
             setState(STATE_PAUSE);
+
+            onStateChangeListener.start();
         }
     }
 
@@ -137,6 +141,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
+        onStateChangeListener.pause();
         setState(STATE_START);
     }
 
@@ -208,7 +213,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
         secondTimer.stopTimer();
         setState(STATE_START);
 
-        onCompleteListener.complete();
+        onStateChangeListener.complete();
     }
 
     /**
@@ -220,7 +225,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
             if (tvStart != null) {
                 tvStart.setText(DateUtils.formatElapsedTime(progress / 1000));
             }
-            onCompleteListener.progressChanged(progress);
+            onStateChangeListener.progressChanged(progress);
         }
 
         @Override
@@ -241,7 +246,17 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
         }
     };
 
-    public interface OnCompleteListener {
+    public interface OnStateChangeListener {
+        /**
+         * 开始播放
+         */
+        void start();
+
+        /**
+         * 暂停
+         */
+        void pause();
+
         /**
          * 完成
          */

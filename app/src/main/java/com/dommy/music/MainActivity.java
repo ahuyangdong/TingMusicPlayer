@@ -1,19 +1,24 @@
 package com.dommy.music;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.dommy.music.adapter.SongListAdapter;
@@ -25,6 +30,7 @@ import com.dommy.music.util.PreferenceUtil;
 import com.dommy.music.widget.AudioPlayer;
 import com.dommy.music.widget.LoadingDialog;
 import com.dommy.music.widget.NoticeToast;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,13 +45,16 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_song_name)
     TextView tvSongName; // 歌曲名称
     @BindView(R.id.img_album)
-    ImageView imgAlbum; // 封面
+    ShapeableImageView imgAlbum; // 封面
+    @BindView(R.id.img_needle)
+    ImageView imgNeedle; // 唱针
     @BindView(R.id.txt_cursor)
     TextView tvCursor; // 当前序号
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView; // 列表
     @BindView(R.id.relative_audio)
     RelativeLayout relativeAudio; // 音频播放组件
+    Animator animAudio; // 旋转动画
 
     private AudioPlayer audioPlayer; // 音频播放器
     private SongListAdapter adapter;
@@ -68,11 +77,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        animAudio = AnimatorInflater.loadAnimator(this, R.animator.anim_disk);
+        // 均匀转动
+        LinearInterpolator linearInterpolator = new LinearInterpolator();
+        animAudio.setInterpolator(linearInterpolator);
+        animAudio.setTarget(imgAlbum);
     }
 
     private void initData() {
         // 播放控制全部在插件里面
-        audioPlayer = new AudioPlayer(this, relativeAudio, onCompleteListener);
+        audioPlayer = new AudioPlayer(this, relativeAudio, onStateChangeListener);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -205,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
      * @param index
      */
     private void playSong(int index, int startTime) {
+        stopAnimation();
         if (mSongList.size() == 0) {
             return;
         }
@@ -222,6 +237,30 @@ public class MainActivity extends AppCompatActivity {
         audioPlayer.play(song.getFilePath(), startTime);
 
         PreferenceUtil.setInt(MainActivity.this, Constant.PREF_PLAY_CURRENT, currentPlay);
+
+        startAnimation();
+    }
+
+    /**
+     * 停止旋转动画
+     */
+    private void stopAnimation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            animAudio.pause();
+        }
+    }
+
+    /**
+     * 开启旋转动画
+     */
+    private void startAnimation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (animAudio.isPaused()) {
+                animAudio.resume();
+            } else {
+                animAudio.start();
+            }
+        }
     }
 
     private BaseQuickAdapter.OnItemClickListener itemClickListener = new BaseQuickAdapter.OnItemClickListener() {
@@ -252,7 +291,17 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.scrollToPosition(position);
     }
 
-    private AudioPlayer.OnCompleteListener onCompleteListener = new AudioPlayer.OnCompleteListener() {
+    private AudioPlayer.OnStateChangeListener onStateChangeListener = new AudioPlayer.OnStateChangeListener() {
+        @Override
+        public void start() {
+            startAnimation();
+        }
+
+        @Override
+        public void pause() {
+            stopAnimation();
+        }
+
         @Override
         public void complete() {
             playNextSong();
