@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentPlay >= mSongList.size()) {
             currentPlay = 0;
         }
+        flushListState(currentPlay);
         playSong(currentPlay, currentPlayTime);
     }
 
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         if (currentPlay >= mSongList.size()) {
             currentPlay = 0;
         }
+        flushListState(currentPlay);
         playSong(currentPlay, 0);
     }
 
@@ -238,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
         PreferenceUtil.setInt(MainActivity.this, Constant.PREF_PLAY_CURRENT, currentPlay);
 
-        startAnimation();
+        startAnimation(true);
     }
 
     /**
@@ -253,12 +255,13 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 开启旋转动画
      */
-    private void startAnimation() {
+    private void startAnimation(boolean isNewStart) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (animAudio.isPaused()) {
-                animAudio.resume();
-            } else {
+            if (isNewStart) {
+                animAudio.cancel();
                 animAudio.start();
+            } else if (animAudio.isPaused()) {
+                animAudio.resume();
             }
         }
     }
@@ -294,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
     private AudioPlayer.OnStateChangeListener onStateChangeListener = new AudioPlayer.OnStateChangeListener() {
         @Override
         public void start() {
-            startAnimation();
+            startAnimation(false);
         }
 
         @Override

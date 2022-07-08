@@ -12,4 +12,5 @@
     <color name="bg_song_item">#30979797</color>
     <color name="transparent">#00000000</color>
     <color name="bg_album">#22979797</color>
+    <color name="progress_music">#D86B44</color>
 </resources>

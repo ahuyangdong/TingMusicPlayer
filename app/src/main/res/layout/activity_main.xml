@@ -78,9 +78,9 @@
                 android:layout_width="60dp"
                 android:layout_height="120dp"
                 android:layout_alignLeft="@id/relative_album"
+                android:layout_alignBottom="@id/relative_album"
                 android:layout_marginLeft="80dp"
                 android:layout_marginBottom="110dp"
-                android:layout_alignBottom="@id/relative_album"
                 android:src="@drawable/album_needle" />
 
             <TextView
@@ -91,7 +91,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="8dp"
                 android:text="/"
-                android:textColor="@color/white"
+                android:textColor="@color/gray_text_light"
                 android:textSize="18sp" />
         </RelativeLayout>
 
@@ -108,9 +108,10 @@
 
                 <TextView
                     android:id="@+id/txt_start_time"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
+                    android:gravity="center"
                     android:text="00:00"
                     android:textColor="@color/white" />
 
@@ -122,14 +123,15 @@
                     android:maxHeight="4dp"
                     android:minHeight="4dp"
                     android:progress="50"
-                    android:progressDrawable="@drawable/pro_webview"
+                    android:progressDrawable="@drawable/pro_music"
                     android:thumb="@drawable/car_player_seek_bar_thumb" />
 
                 <TextView
                     android:id="@+id/txt_end_time"
-                    android:layout_width="wrap_content"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="20dp"
+                    android:gravity="center"
                     android:text="00:00"
                     android:textColor="@color/white" />
             </LinearLayout>
