@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#282737</color>
+    <color name="colorPrimaryDark">#ee302637</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <color name="white">#ffffff</color>
+    <color name="gray_text">#5e5e5e</color>
+    <color name="gray_text_dark">#292929</color>
+    <color name="gray_text_light">#979797</color>
+
+    <color name="bg_song_item">#30979797</color>
+    <color name="transparent">#00000000</color>
+</resources>

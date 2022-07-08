@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">汀鸭</string>
+
+    <string name="note_processing">处理中...</string>
+</resources>
