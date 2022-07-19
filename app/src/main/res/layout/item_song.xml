@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/img_album"
-        android:layout_width="52dp"
-        android:layout_height="52dp" />
+        android:layout_width="@dimen/item_album_image_size"
+        android:layout_height="@dimen/item_album_image_size" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,18 +29,18 @@
             android:maxLines="1"
             android:text="标题"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="@dimen/item_txt_title" />
 
         <TextView
             android:id="@+id/txt_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="@dimen/item_duration_top"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="时长"
             android:textColor="@color/gray_text_light"
-            android:textSize="11sp" />
+            android:textSize="@dimen/item_txt_duration" />
     </LinearLayout>
 
 </RelativeLayout>

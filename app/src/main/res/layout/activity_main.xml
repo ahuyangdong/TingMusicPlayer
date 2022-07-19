@@ -18,7 +18,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/song_name_top"
             android:gravity="center_vertical">
 
             <TextView
@@ -28,7 +28,7 @@
                 android:layout_centerInParent="true"
                 android:text="歌名"
                 android:textColor="@color/white"
-                android:textSize="24sp" />
+                android:textSize="@dimen/txt_song_name" />
 
             <ImageButton
                 android:id="@+id/btn_list_state"
@@ -40,7 +40,7 @@
                 android:src="@drawable/car_list_selector" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1">
@@ -49,26 +49,29 @@
                 android:id="@+id/relative_album"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="160dp"
-                    android:layout_height="160dp"
+                    android:layout_width="@dimen/album_bg_size"
+                    android:layout_height="@dimen/album_bg_size"
                     android:background="@color/bg_album"
                     app:shapeAppearance="@style/circleStyle" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/img_album_bg"
-                    android:layout_width="156dp"
-                    android:layout_height="156dp"
+                    android:layout_width="@dimen/album_image_size"
+                    android:layout_height="@dimen/album_image_size"
                     android:layout_centerInParent="true"
                     android:src="@drawable/album_disk"
                     app:shapeAppearance="@style/circleStyle" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/img_album"
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
+                    android:layout_width="@dimen/album_size"
+                    android:layout_height="@dimen/album_size"
                     android:layout_centerInParent="true"
                     android:src="@drawable/default_post"
                     app:shapeAppearance="@style/circleStyle" />
@@ -76,25 +79,27 @@
 
             <ImageView
                 android:id="@+id/img_needle"
-                android:layout_width="60dp"
-                android:layout_height="120dp"
-                android:layout_alignLeft="@id/relative_album"
-                android:layout_alignBottom="@id/relative_album"
-                android:layout_marginLeft="80dp"
-                android:layout_marginBottom="110dp"
-                android:src="@drawable/album_needle" />
+                android:layout_width="@dimen/img_needle_width"
+                android:layout_height="@dimen/img_needle_height"
+                android:layout_marginRight="@dimen/img_needle_margin_right"
+                android:src="@drawable/album_needle"
+                app:layout_constraintBottom_toTopOf="@+id/relative_album"
+                app:layout_constraintEnd_toEndOf="@+id/relative_album"
+                app:layout_constraintTop_toTopOf="@+id/relative_album" />
 
             <TextView
                 android:id="@+id/txt_cursor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/relative_album"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="20dp"
                 android:text="/"
                 android:textColor="@color/gray_text_light"
-                android:textSize="18sp" />
-        </RelativeLayout>
+                android:textSize="@dimen/txt_cursor"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/relative_album" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
             android:id="@+id/relative_audio"
@@ -114,7 +119,8 @@
                     android:layout_marginLeft="20dp"
                     android:gravity="center"
                     android:text="00:00"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_time" />
 
                 <SeekBar
                     android:id="@+id/seekbar_player"
@@ -134,14 +140,15 @@
                     android:layout_marginRight="20dp"
                     android:gravity="center"
                     android:text="00:00"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/txt_time" />
             </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginTop="@dimen/play_btn_top"
+                android:layout_marginBottom="@dimen/play_btn_bottom">
 
                 <ImageButton
                     android:id="@+id/btn_start"

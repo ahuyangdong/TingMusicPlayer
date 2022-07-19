@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="album_bg_size">160dp</dimen>
+    <dimen name="album_image_size">156dp</dimen>
+    <dimen name="album_size">110dp</dimen>
+    <dimen name="img_needle_width">60dp</dimen>
+    <dimen name="img_needle_height">120dp</dimen>
+    <dimen name="img_needle_margin_right">15dp</dimen>
+    <dimen name="img_needle_margin_bottom">110dp</dimen>
+    <dimen name="play_btn_top">30dp</dimen>
+    <dimen name="play_btn_bottom">20dp</dimen>
+
+    <dimen name="song_name_top">10dp</dimen>
+
+    <dimen name="txt_song_name">24sp</dimen>
+    <dimen name="txt_cursor">18sp</dimen>
+    <dimen name="txt_time">14sp</dimen>
+
+    <dimen name="item_album_image_size">52dp</dimen>
+    <dimen name="item_duration_top">6dp</dimen>
+    <dimen name="item_txt_title">18sp</dimen>
+    <dimen name="item_txt_duration">11sp</dimen>
+
+</resources>
