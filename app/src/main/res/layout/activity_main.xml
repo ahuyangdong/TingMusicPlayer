@@ -117,6 +117,7 @@
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginRight="6dp"
                     android:gravity="center"
                     android:text="00:00"
                     android:textColor="@color/white"
@@ -129,15 +130,18 @@
                     android:layout_weight="1"
                     android:maxHeight="8dp"
                     android:minHeight="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:progress="50"
                     android:progressDrawable="@drawable/pro_music"
                     android:splitTrack="false"
-                    android:thumb="@drawable/car_player_seek_bar_thumb" />
+                    android:thumb="@drawable/seekbar_music" />
 
                 <TextView
                     android:id="@+id/txt_end_time"
                     android:layout_width="50dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
                     android:layout_marginRight="20dp"
                     android:gravity="center"
                     android:text="00:00"
