@@ -4,6 +4,7 @@
     <item android:id="@android:id/background">
         <shape>
             <solid android:color="@color/white" />
+            <corners android:radius="10dp" />
         </shape>
     </item>
     <!-- 第二条进度条颜色 -->
@@ -11,6 +12,7 @@
         <clip>
             <shape>
                 <solid android:color="@color/white"/>
+                <corners android:radius="10dp" />
             </shape>
         </clip>
     </item>
@@ -19,6 +21,7 @@
         <clip>
             <shape>
                 <solid android:color="@color/progress_music" />
+                <corners android:radius="10dp" />
             </shape>
         </clip>
     </item>
