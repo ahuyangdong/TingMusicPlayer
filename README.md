@@ -20,4 +20,4 @@
 
 
 致谢：
-[![TinyPinyin](https://github.com/promeG/TinyPinyin)]
+[TinyPinyin](https://github.com/promeG/TinyPinyin)
