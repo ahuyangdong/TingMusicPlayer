@@ -17,3 +17,7 @@
 界面效果：
 
 ![image](https://github.com/ahuyangdong/TingMusicPlayer/blob/main/images/main.png)
+
+
+致谢：
+[![TinyPinyin](https://github.com/promeG/TinyPinyin)]
