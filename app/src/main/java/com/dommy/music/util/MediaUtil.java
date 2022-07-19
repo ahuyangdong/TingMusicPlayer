@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.dommy.music.bean.Song;
+import com.github.promeg.pinyinhelper.Pinyin;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -65,7 +66,6 @@ public class MediaUtil {
                 String album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
                 // 专辑封面id，根据该id可以获得专辑封面图片
                 long albumId = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
-                Log.e("--- albumId load ---", String.valueOf(title + albumId));
 
                 //歌曲的歌手名： MediaStore.Audio.Media.ARTIST
                 String author = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
@@ -87,6 +87,7 @@ public class MediaUtil {
                     song.setFileName(trimUnknown(fileName));
                     song.setFilePath(filePath);
                     song.setDuration(duration);
+                    song.setFileNamePinyin(Pinyin.toPinyin(song.getFileName(),""));
                     songList.add(song);
                 }
                 cursor.moveToNext();

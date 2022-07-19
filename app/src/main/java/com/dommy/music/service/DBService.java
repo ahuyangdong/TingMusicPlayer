@@ -23,7 +23,7 @@ public class DBService {
         List<Song> songs = null;
         try {
             daoSession = DaoManager.getInstance().getDaoSession();
-            songs = daoSession.getSongDao().queryBuilder().orderAsc(SongDao.Properties.FileName).list();
+            songs = daoSession.getSongDao().queryBuilder().orderAsc(SongDao.Properties.FileNamePinyin).list();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -29,10 +29,13 @@ public class Song {
     private Integer duration; // 时长
     @Transient
     private boolean selected; // 是否选中
+    @Property
+    private String fileNamePinyin; // 文件名称-拼音
 
-    @Generated(hash = 883003868)
+    @Generated(hash = 1436988227)
     public Song(Long id, String title, String author, String album, Long albumId,
-            String fileName, String filePath, Integer duration) {
+            String fileName, String filePath, Integer duration,
+            String fileNamePinyin) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -41,6 +44,7 @@ public class Song {
         this.fileName = fileName;
         this.filePath = filePath;
         this.duration = duration;
+        this.fileNamePinyin = fileNamePinyin;
     }
     @Generated(hash = 87031450)
     public Song() {
@@ -103,5 +107,11 @@ public class Song {
     }
     public boolean getSelected() {
         return this.selected;
+    }
+    public String getFileNamePinyin() {
+        return this.fileNamePinyin;
+    }
+    public void setFileNamePinyin(String fileNamePinyin) {
+        this.fileNamePinyin = fileNamePinyin;
     }
 }

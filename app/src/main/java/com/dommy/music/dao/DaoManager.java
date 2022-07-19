@@ -25,7 +25,7 @@ public class DaoManager {
      */
     public void init() {
         // 建表
-        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(AppData.getInstance().getApplicationContext(), "github-search.db");
+        DaoMaster.DevOpenHelper devOpenHelper = new DaoMaster.DevOpenHelper(AppData.getInstance().getApplicationContext(), "ting-music.db");
         daoMaster = new DaoMaster(devOpenHelper.getWritableDatabase());
         daoSession = daoMaster.newSession();
     }

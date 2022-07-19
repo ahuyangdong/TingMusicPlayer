@@ -32,6 +32,7 @@ public class SongDao extends AbstractDao<Song, Long> {
         public final static Property FileName = new Property(5, String.class, "fileName", false, "FILE_NAME");
         public final static Property FilePath = new Property(6, String.class, "filePath", false, "FILE_PATH");
         public final static Property Duration = new Property(7, Integer.class, "duration", false, "DURATION");
+        public final static Property FileNamePinyin = new Property(8, String.class, "fileNamePinyin", false, "FILE_NAME_PINYIN");
     }
 
 
@@ -54,7 +55,8 @@ public class SongDao extends AbstractDao<Song, Long> {
                 "\"ALBUM_ID\" INTEGER," + // 4: albumId
                 "\"FILE_NAME\" TEXT," + // 5: fileName
                 "\"FILE_PATH\" TEXT," + // 6: filePath
-                "\"DURATION\" INTEGER);"); // 7: duration
+                "\"DURATION\" INTEGER," + // 7: duration
+                "\"FILE_NAME_PINYIN\" TEXT);"); // 8: fileNamePinyin
     }
 
     /** Drops the underlying database table. */
@@ -106,6 +108,11 @@ public class SongDao extends AbstractDao<Song, Long> {
         if (duration != null) {
             stmt.bindLong(8, duration);
         }
+ 
+        String fileNamePinyin = entity.getFileNamePinyin();
+        if (fileNamePinyin != null) {
+            stmt.bindString(9, fileNamePinyin);
+        }
     }
 
     @Override
@@ -151,6 +158,11 @@ public class SongDao extends AbstractDao<Song, Long> {
         if (duration != null) {
             stmt.bindLong(8, duration);
         }
+ 
+        String fileNamePinyin = entity.getFileNamePinyin();
+        if (fileNamePinyin != null) {
+            stmt.bindString(9, fileNamePinyin);
+        }
     }
 
     @Override
@@ -168,7 +180,8 @@ public class SongDao extends AbstractDao<Song, Long> {
             cursor.isNull(offset + 4) ? null : cursor.getLong(offset + 4), // albumId
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // fileName
             cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // filePath
-            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7) // duration
+            cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7), // duration
+            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // fileNamePinyin
         );
         return entity;
     }
@@ -183,6 +196,7 @@ public class SongDao extends AbstractDao<Song, Long> {
         entity.setFileName(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setFilePath(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
         entity.setDuration(cursor.isNull(offset + 7) ? null : cursor.getInt(offset + 7));
+        entity.setFileNamePinyin(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
      }
     
     @Override
