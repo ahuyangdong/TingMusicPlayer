@@ -115,7 +115,8 @@ public class MediaUtil {
      * @return
      */
     public static String getSongShowTitle(Song song) {
-        if (!CommonUtil.isNull(song.getTitle()) && !CommonUtil.isNull(song.getAuthor())) {
+        if (!CommonUtil.isNull(song.getTitle()) && !CommonUtil.isNull(song.getAuthor()) &&
+                !CommonUtil.isMessyCode(song.getTitle()) && !CommonUtil.isMessyCode(song.getAuthor())) {
             return song.getAuthor() + " - " + song.getTitle();
         }
         if (!CommonUtil.isNull(song.getTitle()) && song.getTitle().contains("-")) {

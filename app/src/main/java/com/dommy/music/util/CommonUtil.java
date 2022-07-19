@@ -520,4 +520,15 @@ public class CommonUtil {
         }
         return null;
     }
+
+    /**
+     * 判断字符串是否是乱码
+     *
+     * @param str 字符串
+     * @return 是否是乱码
+     */
+    public static boolean isMessyCode(String str) {
+        return !(java.nio.charset.Charset.forName("GBK").newEncoder().canEncode(str));
+    }
+
 }
