@@ -1,68 +1,66 @@
 package com.dommy.music;
 
 import android.Manifest;
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.dommy.music.adapter.MainFragmentAdapter;
 import com.dommy.music.adapter.SongListAdapter;
 import com.dommy.music.bean.Song;
 import com.dommy.music.service.DBService;
+import com.dommy.music.util.CommonUtil;
 import com.dommy.music.util.Constant;
 import com.dommy.music.util.MediaUtil;
 import com.dommy.music.util.PreferenceUtil;
 import com.dommy.music.widget.AudioPlayer;
 import com.dommy.music.widget.LoadingDialog;
 import com.dommy.music.widget.NoticeToast;
-import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DiskFragment.OnFragmentInteractionListener,
+        LyricFragment.OnFragmentInteractionListener {
     @BindView(R.id.btn_loop)
     ImageButton btnLoop; // 循环模式
     @BindView(R.id.txt_song_name)
     TextView tvSongName; // 歌曲名称
-    @BindView(R.id.img_album)
-    ShapeableImageView imgAlbum; // 封面
-    @BindView(R.id.img_needle)
-    ImageView imgNeedle; // 唱针
-    @BindView(R.id.txt_cursor)
-    TextView tvCursor; // 当前序号
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView; // 列表
     @BindView(R.id.relative_audio)
     RelativeLayout relativeAudio; // 音频播放组件
-    Animator animAudio; // 旋转动画
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
 
+    private MainFragmentAdapter mainFragmentAdapter;
     private AudioPlayer audioPlayer; // 音频播放器
-    private SongListAdapter adapter;
+    private SongListAdapter songListAdapter;
     private LinearLayoutManager layoutManager;
     private List<Song> mSongList;
+    private Song currentSong;
     private int loopStyle;
     private int currentPlay; // 当前播放歌曲序号
     private int currentPlayTime; // 当前播放歌曲时间
+    private String showTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,30 +71,42 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
 
-        initData();
+        loadData();
     }
 
     private void initView() {
-        animAudio = AnimatorInflater.loadAnimator(this, R.animator.anim_disk);
-        // 均匀转动
-        LinearInterpolator linearInterpolator = new LinearInterpolator();
-        animAudio.setInterpolator(linearInterpolator);
-        animAudio.setTarget(imgAlbum);
-    }
-
-    private void initData() {
-        // 播放控制全部在插件里面
-        audioPlayer = new AudioPlayer(this, relativeAudio, onStateChangeListener);
-
+        loopStyle = PreferenceUtil.getInt(MainActivity.this, Constant.PREF_LOOP_STYLE, Constant.LOOP_ORDER);
+        if (loopStyle == Constant.LOOP_ORDER) {
+            btnLoop.setImageResource(R.drawable.car_main_circle_selector);
+        } else if (loopStyle == Constant.LOOP_SINGLE) {
+            btnLoop.setImageResource(R.drawable.car_main_singlecycle_selector);
+        } else if (loopStyle == Constant.LOOP_RANDOM) {
+            btnLoop.setImageResource(R.drawable.car_main_shuffle_selector);
+        }
+        int listVisible = PreferenceUtil.getInt(MainActivity.this, Constant.PREF_LIST_VISIBLE, View.VISIBLE);
+        if (listVisible == View.VISIBLE) {
+            recyclerView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.GONE);
+        }
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new SongListAdapter(this, R.layout.item_song, null);
-        recyclerView.setAdapter(adapter);
+        songListAdapter = new SongListAdapter(this, R.layout.item_song, null);
+        recyclerView.setAdapter(songListAdapter);
 
-        adapter.openLoadAnimation();
-        adapter.setOnItemClickListener(itemClickListener);
+        songListAdapter.openLoadAnimation();
+        songListAdapter.setOnItemClickListener(itemClickListener);
 
+        // 播放控制全部在插件里面
+        audioPlayer = new AudioPlayer(this, relativeAudio, onStateChangeListener);
+
+        mainFragmentAdapter = new MainFragmentAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(mainFragmentAdapter);
+        viewPager.setOffscreenPageLimit(2);
+    }
+
+    private void loadData() {
         showSongList();
 
         currentPlay = PreferenceUtil.getInt(this, Constant.PREF_PLAY_CURRENT, 0);
@@ -152,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             btnLoop.setImageResource(R.drawable.car_main_shuffle_selector);
             NoticeToast.show(this, "随机播放");
         }
+        PreferenceUtil.setInt(MainActivity.this, Constant.PREF_LOOP_STYLE, loopStyle);
     }
 
     /**
@@ -161,8 +172,10 @@ public class MainActivity extends AppCompatActivity {
     void toggleList() {
         if (recyclerView.getVisibility() == View.VISIBLE) {
             recyclerView.setVisibility(View.GONE);
+            PreferenceUtil.setInt(MainActivity.this, Constant.PREF_LIST_VISIBLE, View.GONE);
         } else {
             recyclerView.setVisibility(View.VISIBLE);
+            PreferenceUtil.setInt(MainActivity.this, Constant.PREF_LIST_VISIBLE, View.VISIBLE);
         }
     }
 
@@ -186,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btn_next)
     void playNextSong() {
         if (loopStyle == Constant.LOOP_RANDOM) {
-            currentPlay = (int) (Math.random() * mSongList.size());
+            Random random = new Random();
+            currentPlay = random.nextInt(mSongList.size());
         } else if (loopStyle == Constant.LOOP_ORDER) {
             currentPlay = (currentPlay + 1) % mSongList.size();
         } else if (loopStyle == Constant.LOOP_SINGLE) {
@@ -202,7 +216,8 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btn_prev)
     void playPrevSong() {
         if (loopStyle == Constant.LOOP_RANDOM) {
-            currentPlay = (int) (Math.random() * mSongList.size());
+            Random random = new Random();
+            currentPlay = random.nextInt(mSongList.size());
         } else if (loopStyle == Constant.LOOP_ORDER) {
             currentPlay = (currentPlay - 1) % mSongList.size();
             if (currentPlay < 0) {
@@ -221,49 +236,26 @@ public class MainActivity extends AppCompatActivity {
      * @param index
      */
     private void playSong(int index, int startTime) {
-        stopAnimation();
         if (mSongList.size() == 0) {
             return;
         }
-        Song song = mSongList.get(index);
+        currentSong = mSongList.get(index);
         // 显示歌曲名称
-        tvSongName.setText(MediaUtil.getSongShowTitle(song));
-        // 设置专辑封面
-        Bitmap albumBitmap = MediaUtil.loadCoverFromMediaStore(this, song.getAlbumId());
-        if (albumBitmap == null) {
-            imgAlbum.setImageResource(R.drawable.default_post);
-        } else {
-            imgAlbum.setImageBitmap(albumBitmap);
-        }
-        tvCursor.setText((currentPlay + 1) + "/" + mSongList.size());
-        audioPlayer.play(song.getFilePath(), startTime);
+        showTitle = MediaUtil.getSongShowTitle(currentSong);
+        tvSongName.setText(showTitle);
+        audioPlayer.play(currentSong.getFilePath(), startTime);
 
+        DiskFragment diskFragment = getDiskFragment();
+        if (diskFragment != null) {
+            // 设置专辑封面
+            onDiskLoaded();
+        }
+        LyricFragment lyricFragment = getLyricFragment();
+        if (lyricFragment != null) {
+            // 显示歌词
+            onLyricLoaded();
+        }
         PreferenceUtil.setInt(MainActivity.this, Constant.PREF_PLAY_CURRENT, currentPlay);
-
-        startAnimation(true);
-    }
-
-    /**
-     * 停止旋转动画
-     */
-    private void stopAnimation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            animAudio.pause();
-        }
-    }
-
-    /**
-     * 开启旋转动画
-     */
-    private void startAnimation(boolean isNewStart) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (isNewStart) {
-                animAudio.cancel();
-                animAudio.start();
-            } else if (animAudio.isPaused()) {
-                animAudio.resume();
-            }
-        }
     }
 
     private BaseQuickAdapter.OnItemClickListener itemClickListener = new BaseQuickAdapter.OnItemClickListener() {
@@ -290,19 +282,41 @@ public class MainActivity extends AppCompatActivity {
                 song.setSelected(false);
             }
         }
-        adapter.setNewData(mSongList);
+        songListAdapter.setNewData(mSongList);
         recyclerView.scrollToPosition(position);
+    }
+
+    private DiskFragment getDiskFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments.size() <= 0) {
+            return null;
+        }
+        return (DiskFragment) fragments.get(0);
+    }
+
+    private LyricFragment getLyricFragment() {
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments.size() <= 1) {
+            return null;
+        }
+        return (LyricFragment) fragments.get(1);
     }
 
     private AudioPlayer.OnStateChangeListener onStateChangeListener = new AudioPlayer.OnStateChangeListener() {
         @Override
         public void start() {
-            startAnimation(false);
+            DiskFragment diskFragment = getDiskFragment();
+            if (diskFragment != null) {
+                diskFragment.startAnimation(false);
+            }
         }
 
         @Override
         public void pause() {
-            stopAnimation();
+            DiskFragment diskFragment = getDiskFragment();
+            if (diskFragment != null) {
+                diskFragment.stopAnimation();
+            }
         }
 
         @Override
@@ -312,6 +326,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void progressChanged(int newProgress) {
+            LyricFragment lyricFragment = getLyricFragment();
+            if (lyricFragment != null) {
+                lyricFragment.setDuration(newProgress);
+            }
             PreferenceUtil.setInt(MainActivity.this, Constant.PREF_PLAY_TIME, newProgress);
         }
     };
@@ -360,5 +378,33 @@ public class MainActivity extends AppCompatActivity {
         if (audioPlayer != null) {
             audioPlayer.release();
         }
+    }
+
+    @Override
+    public void onDiskLoaded() {
+        if (currentSong == null) {
+            return;
+        }
+        // 加载播放页数据
+        DiskFragment diskFragment = getDiskFragment();
+        Bitmap albumBitmap = MediaUtil.loadCoverFromMediaStore(this, currentSong.getAlbumId());
+        diskFragment.setImgAlbum(albumBitmap);
+        diskFragment.setCursorText((currentPlay + 1) + "/" + mSongList.size());
+        diskFragment.stopAnimation();
+        diskFragment.startAnimation(true);
+    }
+
+    @Override
+    public void onLyricLoaded() {
+        if (currentSong == null) {
+            return;
+        }
+        LyricFragment lyricFragment = getLyricFragment();
+        lyricFragment.setCurrentPlay(showTitle);
+    }
+
+    @Override
+    public void onLrcDragged(int duration) {
+        audioPlayer.seekTo(duration);
     }
 }

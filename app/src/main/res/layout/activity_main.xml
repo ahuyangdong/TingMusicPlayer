@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/song_name_top"
+            android:layout_marginBottom="@dimen/song_name_bottom"
             android:gravity="center_vertical">
 
             <TextView
@@ -40,66 +41,11 @@
                 android:src="@drawable/car_list_selector" />
         </RelativeLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
             android:layout_width="match_parent"
             android:layout_height="0dip"
-            android:layout_weight="1">
-
-            <RelativeLayout
-                android:id="@+id/relative_album"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="@dimen/album_bg_size"
-                    android:layout_height="@dimen/album_bg_size"
-                    android:background="@color/bg_album"
-                    app:shapeAppearance="@style/circleStyle" />
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/img_album_bg"
-                    android:layout_width="@dimen/album_image_size"
-                    android:layout_height="@dimen/album_image_size"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/album_disk"
-                    app:shapeAppearance="@style/circleStyle" />
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/img_album"
-                    android:layout_width="@dimen/album_size"
-                    android:layout_height="@dimen/album_size"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/default_post"
-                    app:shapeAppearance="@style/circleStyle" />
-            </RelativeLayout>
-
-            <ImageView
-                android:id="@+id/img_needle"
-                android:layout_width="@dimen/img_needle_width"
-                android:layout_height="@dimen/img_needle_height"
-                android:layout_marginRight="@dimen/img_needle_margin_right"
-                android:src="@drawable/album_needle"
-                app:layout_constraintBottom_toTopOf="@+id/relative_album"
-                app:layout_constraintEnd_toEndOf="@+id/relative_album"
-                app:layout_constraintTop_toTopOf="@+id/relative_album" />
-
-            <TextView
-                android:id="@+id/txt_cursor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:text="/"
-                android:textColor="@color/gray_text_light"
-                android:textSize="@dimen/txt_cursor"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/relative_album" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_weight="1" />
 
         <RelativeLayout
             android:id="@+id/relative_audio"
@@ -215,5 +161,5 @@
         android:scrollbars="none"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.25" />
+        app:layout_constraintWidth_percent="@dimen/list_width_percent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

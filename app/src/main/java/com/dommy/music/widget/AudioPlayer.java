@@ -165,6 +165,16 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
     }
 
     /**
+     * 外部快进到制定时间
+     *
+     * @param duration
+     */
+    public void seekTo(int duration) {
+        mediaPlayer.seekTo(duration);
+        updateProgress();
+    }
+
+    /**
      * 设置播放图标状态
      *
      * @param state

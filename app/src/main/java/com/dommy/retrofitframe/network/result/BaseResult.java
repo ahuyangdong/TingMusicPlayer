@@ -1,0 +1,9 @@
+package com.dommy.retrofitframe.network.result;
+
+import lombok.Data;
+
+/**
+ * 返回结果对象
+ */
+public class BaseResult {
+}

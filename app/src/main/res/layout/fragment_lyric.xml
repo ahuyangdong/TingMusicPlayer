@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".LyricFragment">
+
+    <me.wcy.lrcview.LrcView
+        android:id="@+id/lrc_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:lrcAnimationDuration="20"
+        app:lrcCurrentTextColor="@color/progress_music"
+        app:lrcDividerHeight="10dp"
+        app:lrcLabel="暂无歌词"
+        app:lrcNormalTextColor="@color/white"
+        app:lrcNormalTextSize="22sp"
+        app:lrcTextGravity="center"
+        app:lrcTextSize="26sp"
+        app:lrcTimeTextColor="@color/gray_text_light"
+        app:lrcTimeTextSize="16sp"
+        app:lrcPadding="10dp"
+        app:lrcTimelineColor="@color/progress_music"
+        app:lrcTimelineTextColor="@color/progress_music" />
+
+</FrameLayout>
