@@ -546,7 +546,6 @@ public class CommonUtil {
             fout.write(bytes);
             fout.close();
         } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -566,7 +565,6 @@ public class CommonUtil {
             res = new String(buffer, "UTF-8");
             fin.close();
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return res;
     }

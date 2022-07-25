@@ -107,7 +107,9 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
 
     private void loadData() {
         showSongList();
-
+        if (mSongList.size() == 0) {
+            return;
+        }
         currentPlay = PreferenceUtil.getInt(this, Constant.PREF_PLAY_CURRENT, 0);
         currentPlayTime = PreferenceUtil.getInt(this, Constant.PREF_PLAY_TIME, 0);
         if (currentPlay >= mSongList.size()) {
@@ -136,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
 
         showSongList();
 
+        if (mSongList.size() == 0) {
+            return;
+        }
         if (currentPlay >= mSongList.size()) {
             currentPlay = 0;
         }
@@ -197,6 +202,9 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
      */
     @OnClick(R.id.btn_next)
     void playNextSong() {
+        if (mSongList.size() == 0) {
+            return;
+        }
         if (loopStyle == Constant.LOOP_RANDOM) {
             Random random = new Random();
             currentPlay = random.nextInt(mSongList.size());
@@ -214,6 +222,9 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
      */
     @OnClick(R.id.btn_prev)
     void playPrevSong() {
+        if (mSongList.size() == 0) {
+            return;
+        }
         if (loopStyle == Constant.LOOP_RANDOM) {
             Random random = new Random();
             currentPlay = random.nextInt(mSongList.size());
@@ -235,9 +246,6 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
      * @param index
      */
     private void playSong(int index, int startTime) {
-        if (mSongList.size() == 0) {
-            return;
-        }
         currentSong = mSongList.get(index);
         // 显示歌曲名称
         tvSongName.setText(MediaUtil.getSongShowTitle(currentSong));

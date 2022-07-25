@@ -82,6 +82,9 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
 
     @OnClick(R.id.btn_start)
     void startPlay() {
+        if (mediaPlayer.getDuration() <= 10) {
+            return;
+        }
         startPlay(-1);
     }
 
