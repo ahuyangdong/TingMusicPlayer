@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,16 +13,25 @@
         android:layout_height="match_parent"
         app:lrcAnimationDuration="20"
         app:lrcCurrentTextColor="@color/progress_music"
-        app:lrcDividerHeight="10dp"
+        app:lrcDividerHeight="20dp"
         app:lrcLabel="暂无歌词"
         app:lrcNormalTextColor="@color/white"
         app:lrcNormalTextSize="22sp"
+        app:lrcPadding="10dp"
         app:lrcTextGravity="center"
         app:lrcTextSize="26sp"
         app:lrcTimeTextColor="@color/gray_text_light"
         app:lrcTimeTextSize="16sp"
-        app:lrcPadding="10dp"
         app:lrcTimelineColor="@color/progress_music"
         app:lrcTimelineTextColor="@color/progress_music" />
 
-</FrameLayout>
+    <ImageButton
+        android:id="@+id/btn_lrc"
+        style="?attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/car_lyric" />
+</RelativeLayout>

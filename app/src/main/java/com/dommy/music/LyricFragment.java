@@ -23,6 +23,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import me.wcy.lrcview.LrcView;
 
 
@@ -67,6 +68,11 @@ public class LyricFragment extends Fragment {
         });
     }
 
+    @OnClick(R.id.btn_lrc)
+    void updateLrc() {
+        loadLrc(true);
+    }
+
     /**
      * 设置播放数值显示内容
      *
@@ -75,7 +81,7 @@ public class LyricFragment extends Fragment {
     public void setCurrentPlay(Song song) {
         currentPlay = song;
         lrcView.loadLrc("[00:00.01]歌词加载中...");
-        loadLrc();
+        loadLrc(false);
     }
 
     /**
@@ -90,12 +96,12 @@ public class LyricFragment extends Fragment {
     /**
      * 加载LRC歌词内容
      */
-    private void loadLrc() {
+    private void loadLrc(boolean isUserDownload) {
         // 读取本地文件
         String filePath = currentPlay.getFilePath();
         filePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".lrc";
         String content = CommonUtil.readFile(filePath);
-        if (!CommonUtil.isNull(content)) {
+        if (!CommonUtil.isNull(content) && !isUserDownload) {
             lrcView.loadLrc(content);
             return;
         }
