@@ -11,8 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dommy.music.bean.Song;
+import com.dommy.music.util.CommonUtil;
 import com.dommy.music.util.KuGouLrcUtil;
+import com.dommy.music.util.MediaUtil;
+import com.dommy.music.util.NetworkUtil;
 import com.dommy.music.widget.NoticeToast;
+
+import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +33,7 @@ public class LyricFragment extends Fragment {
     LrcView lrcView; // 歌词控件
 
     private LyricFragment.OnFragmentInteractionListener mListener;
-    private String currentPlay; // 当前播放歌曲
+    private Song currentPlay; // 当前播放歌曲
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +70,7 @@ public class LyricFragment extends Fragment {
      *
      * @param song
      */
-    public void setCurrentPlay(String song) {
+    public void setCurrentPlay(Song song) {
         currentPlay = song;
         lrcView.updateTime(0);
         loadLrc();
@@ -79,8 +85,21 @@ public class LyricFragment extends Fragment {
         lrcView.updateTime(duration);
     }
 
+    /**
+     * 加载LRC歌词内容
+     */
     private void loadLrc() {
-        KuGouLrcUtil.getLrcUrl(getContext(), currentPlay, new KuGouLrcUtil.GetLrcUrlListener() {
+        // 读取本地文件
+        String filePath = currentPlay.getFilePath();
+        filePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".lrc";
+        String content = CommonUtil.readFile(filePath);
+        if (!CommonUtil.isNull(content)) {
+            lrcView.loadLrc(content);
+            return;
+        }
+        // 读取网络歌词
+        String showTitle = MediaUtil.getSongShowTitle(currentPlay);
+        KuGouLrcUtil.getLrcUrl(getContext(), showTitle, new KuGouLrcUtil.GetLrcUrlListener() {
             @Override
             public void onLrcUrl(String lrcUrl) {
                 loadLrc(lrcUrl);
@@ -88,7 +107,11 @@ public class LyricFragment extends Fragment {
 
             @Override
             public void onFailure() {
-                NoticeToast.show(getContext(), "暂无歌词");
+                if (NetworkUtil.isNetworkConnected(getContext())) {
+                    lrcView.setLabel("暂无歌词");
+                } else {
+                    lrcView.setLabel("暂无歌词，请连接网络后重试");
+                }
             }
         });
     }
@@ -100,11 +123,19 @@ public class LyricFragment extends Fragment {
             public void onLrcLoad(String lrc) {
                 lrc = new String(Base64.decode(lrc, Base64.DEFAULT));
                 lrcView.loadLrc(lrc);
+                // 存入本地文件
+                String filePath = currentPlay.getFilePath();
+                filePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".lrc";
+                CommonUtil.writeFile(filePath, lrc);
             }
 
             @Override
             public void onFailure() {
-                NoticeToast.show(getContext(), "暂无歌词");
+                if (NetworkUtil.isNetworkConnected(getContext())) {
+                    lrcView.setLabel("暂无歌词");
+                } else {
+                    lrcView.setLabel("暂无歌词，请连接网络后重试");
+                }
             }
         });
     }

@@ -98,7 +98,7 @@ public class RetrofitRequest {
                 try {
                     ResponseBody body = response.body();
                     if (body == null) {
-                        resultHandler.onServerError();
+//                        resultHandler.onServerError();
                         resultHandler.onAfterFailure();
                         return;
                     }
@@ -108,14 +108,14 @@ public class RetrofitRequest {
                     resultHandler.onResult(t);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    resultHandler.onFailure(e);
+//                    resultHandler.onFailure(e);
                     resultHandler.onAfterFailure();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                resultHandler.onFailure(t);
+//                resultHandler.onFailure(t);
                 resultHandler.onAfterFailure();
             }
         });

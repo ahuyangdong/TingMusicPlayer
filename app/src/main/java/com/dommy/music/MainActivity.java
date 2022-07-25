@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
     private int loopStyle;
     private int currentPlay; // 当前播放歌曲序号
     private int currentPlayTime; // 当前播放歌曲时间
-    private String showTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,8 +240,7 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
         }
         currentSong = mSongList.get(index);
         // 显示歌曲名称
-        showTitle = MediaUtil.getSongShowTitle(currentSong);
-        tvSongName.setText(showTitle);
+        tvSongName.setText(MediaUtil.getSongShowTitle(currentSong));
         audioPlayer.play(currentSong.getFilePath(), startTime);
 
         DiskFragment diskFragment = getDiskFragment();
@@ -400,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
             return;
         }
         LyricFragment lyricFragment = getLyricFragment();
-        lyricFragment.setCurrentPlay(showTitle);
+        lyricFragment.setCurrentPlay(currentSong);
     }
 
     @Override

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -531,4 +533,41 @@ public class CommonUtil {
         return !(java.nio.charset.Charset.forName("GBK").newEncoder().canEncode(str));
     }
 
+    /**
+     * 写文件
+     *
+     * @param fileName
+     * @param content
+     */
+    public static void writeFile(String fileName, String content) {
+        try {
+            FileOutputStream fout = new FileOutputStream(fileName);
+            byte[] bytes = content.getBytes();
+            fout.write(bytes);
+            fout.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 读取文件内容
+     *
+     * @param fileName
+     * @return
+     */
+    public static String readFile(String fileName) {
+        String res = null;
+        try {
+            FileInputStream fin = new FileInputStream(fileName);
+            int length = fin.available();
+            byte[] buffer = new byte[length];
+            fin.read(buffer);
+            res = new String(buffer, "UTF-8");
+            fin.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
 }

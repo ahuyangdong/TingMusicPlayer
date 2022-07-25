@@ -21,3 +21,4 @@
 
 致谢：
 [TinyPinyin](https://github.com/promeG/TinyPinyin)
+[lrcview](https://github.com/wangchenyan/lrcview)

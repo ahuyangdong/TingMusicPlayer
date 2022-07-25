@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -24,8 +25,7 @@ import butterknife.OnClick;
  * 自定义音频播放器组件
  */
 public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener {
-    private static final int TIME_SECOND = 1000;
-    private static final int TIME_NET = 15000; // 15秒网络延迟
+    private static final int TIME_INTEVAL = 500;
     private static final int STATE_START = 1;
     private static final int STATE_PAUSE = 2;
     private static final int MSG_PROGRESS = 1;
@@ -104,7 +104,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
                 mediaPlayer.seekTo(startTime);
             }
             mediaPlayer.start();
-            secondTimer.startLoopTimer(TIME_SECOND);
+            secondTimer.startLoopTimer(TIME_INTEVAL);
             setState(STATE_PAUSE);
 
             onStateChangeListener.start();
@@ -250,7 +250,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
             // 因为max progress与音频长度一致，所以拖到哪就播放哪里
             if (isPrepared) {
                 secondTimer.stopTimer();
-                secondTimer.startLoopTimer(TIME_SECOND);
+                secondTimer.startLoopTimer(TIME_INTEVAL);
                 mediaPlayer.seekTo(progress);
             }
         }
