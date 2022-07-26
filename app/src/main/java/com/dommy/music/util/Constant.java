@@ -29,7 +29,7 @@ public class Constant {
     /**
      * 搜索歌曲信息
      */
-    public final static String URL_SONG_SEARCH = "http://songsearch.kugou.com/song_search_v2?keyword=%s&platform=WebFilter&page=1&pagesize=5";
+    public final static String URL_SONG_SEARCH = "http://songsearch.kugou.com/song_search_v2?keyword=%s&platform=WebFilter&page=1&pagesize=20";
     /**
      * 获取LRC获取授权
      */

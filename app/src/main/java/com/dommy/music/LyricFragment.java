@@ -167,11 +167,20 @@ public class LyricFragment extends Fragment {
                 if (isUserDownload) {
                     // 弹窗
                     List<LrcSelect> lrcList = new ArrayList<>();
+                    List<SongSearch> songSearchListNew = new ArrayList<>();
                     for (SongSearch songSearch : songSearchList) {
+                        if (CommonUtil.isNull(songSearch.getSQFileHash())) {
+                            continue;
+                        }
                         LrcSelect lrcSelect = new LrcSelect(songSearch.getSongName(), songSearch.getSingerName());
                         lrcList.add(lrcSelect);
+                        songSearchListNew.add(songSearch);
                     }
-                    LyricFragment.this.songSearchList = songSearchList;
+                    if (lrcList.size() == 0) {
+                        requestLrcFailure();
+                        return;
+                    }
+                    LyricFragment.this.songSearchList = songSearchListNew;
                     lrcSongSelectDialog.setList(lrcList);
                     lrcSongSelectDialog.show();
                 } else {
@@ -213,12 +222,22 @@ public class LyricFragment extends Fragment {
                 if (isUserDownload) {
                     // 弹窗
                     List<LrcSelect> lrcList = new ArrayList<>();
+                    List<LrcAccessResult.Candidate> candidateListNew = new ArrayList<>();
                     for (LrcAccessResult.Candidate candidate : candidateList) {
+                        if (CommonUtil.isNull(candidate.getAccesskey())
+                                || CommonUtil.isNull(candidate.getId())) {
+                            continue;
+                        }
                         LrcSelect lrcSelect = new LrcSelect(candidate.getSinger() + "-" + candidate.getSong(),
                                 DateUtils.formatElapsedTime(candidate.getDuration() / 1000));
                         lrcList.add(lrcSelect);
+                        candidateListNew.add(candidate);
                     }
-                    LyricFragment.this.candidateList = candidateList;
+                    if (lrcList.size() == 0) {
+                        requestLrcFailure();
+                        return;
+                    }
+                    LyricFragment.this.candidateList = candidateListNew;
                     lrcSelectDialog.setList(lrcList);
                     lrcSelectDialog.show();
                 } else {
@@ -271,6 +290,8 @@ public class LyricFragment extends Fragment {
             lrcView.loadLrc("[00:00.01]暂无歌词，请连接网络后重试");
         }
         isUserDownload = false;
+        lrcSongSelectDialog.close();
+        lrcSelectDialog.close();
     }
 
     @Override
