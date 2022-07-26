@@ -1,7 +1,5 @@
 package com.dommy.retrofitframe.network.result;
 
-import java.util.List;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

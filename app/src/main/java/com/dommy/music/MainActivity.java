@@ -22,7 +22,6 @@ import com.dommy.music.adapter.MainFragmentAdapter;
 import com.dommy.music.adapter.SongListAdapter;
 import com.dommy.music.bean.Song;
 import com.dommy.music.service.DBService;
-import com.dommy.music.util.CommonUtil;
 import com.dommy.music.util.Constant;
 import com.dommy.music.util.MediaUtil;
 import com.dommy.music.util.PreferenceUtil;

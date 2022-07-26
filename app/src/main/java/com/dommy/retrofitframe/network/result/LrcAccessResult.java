@@ -1,7 +1,5 @@
 package com.dommy.retrofitframe.network.result;
 
-import com.dommy.music.bean.SongSearch;
-
 import java.util.List;
 
 import lombok.Data;
@@ -19,5 +17,8 @@ public class LrcAccessResult extends BaseResult {
     public static class Candidate {
         private String id;
         private String accesskey;
+        private String singer;
+        private String song;
+        private int duration;
     }
 }

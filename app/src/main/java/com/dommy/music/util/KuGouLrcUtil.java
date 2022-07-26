@@ -11,14 +11,15 @@ import com.dommy.retrofitframe.network.result.SongSearchResult;
 import java.util.List;
 
 public class KuGouLrcUtil {
+
     /**
-     * 获取LRC歌词读取地址
+     * 获取歌曲信息
      *
      * @param context
      * @param keyword
      * @return
      */
-    public static void getLrcUrl(Context context, String keyword, GetLrcUrlListener getLrcUrlListener) {
+    public static void getSongSearchList(Context context, String keyword, GetSongListListener getSongListListener) {
         String url = String.format(Constant.URL_SONG_SEARCH, keyword);
         RetrofitRequest.sendGetRequest(url, SongSearchResult.class, new RetrofitRequest.ResultHandler<SongSearchResult>(context) {
             @Override
@@ -28,35 +29,25 @@ public class KuGouLrcUtil {
             @Override
             public void onResult(SongSearchResult songSearchResult) {
                 if (songSearchResult == null) {
-                    getLrcUrlListener.onFailure();
+                    getSongListListener.onFailure();
                     return;
                 }
                 SongSearchResult.Data data = songSearchResult.getData();
                 if (data == null) {
-                    getLrcUrlListener.onFailure();
+                    getSongListListener.onFailure();
                     return;
                 }
                 List<SongSearch> songSearchList = data.getLists();
                 if (songSearchList == null || songSearchList.size() == 0) {
-                    getLrcUrlListener.onFailure();
+                    getSongListListener.onFailure();
                     return;
                 }
-                SongSearch songSearch = songSearchList.get(0);
-                if (songSearch == null) {
-                    getLrcUrlListener.onFailure();
-                    return;
-                }
-                String hash = songSearch.getSQFileHash();
-                if (CommonUtil.isNull(hash)) {
-                    getLrcUrlListener.onFailure();
-                    return;
-                }
-                getLrcAccessKey(context, hash, getLrcUrlListener);
+                getSongListListener.onSongList(songSearchList);
             }
 
             @Override
             public void onAfterFailure() {
-                getLrcUrlListener.onFailure();
+                getSongListListener.onFailure();
             }
         });
     }
@@ -66,9 +57,9 @@ public class KuGouLrcUtil {
      *
      * @param context
      * @param hash
-     * @param getLrcUrlListener
+     * @param getLrcAccessKeyListener
      */
-    private static void getLrcAccessKey(Context context, String hash, GetLrcUrlListener getLrcUrlListener) {
+    public static void getLrcAccessKey(Context context, String hash, GetLrcAccessKeyListener getLrcAccessKeyListener) {
         String url = String.format(Constant.URL_LRC_ACCESSKEY, hash);
         RetrofitRequest.sendGetRequest(url, LrcAccessResult.class, new RetrofitRequest.ResultHandler<LrcAccessResult>(context) {
             @Override
@@ -78,26 +69,25 @@ public class KuGouLrcUtil {
             @Override
             public void onResult(LrcAccessResult lrcAccessResult) {
                 if (lrcAccessResult == null) {
-                    getLrcUrlListener.onFailure();
+                    getLrcAccessKeyListener.onFailure();
                     return;
                 }
                 List<LrcAccessResult.Candidate> candidates = lrcAccessResult.getCandidates();
                 if (candidates == null || candidates.size() == 0) {
-                    getLrcUrlListener.onFailure();
+                    getLrcAccessKeyListener.onFailure();
                     return;
                 }
                 LrcAccessResult.Candidate candidate = candidates.get(0);
                 if (candidate == null) {
-                    getLrcUrlListener.onFailure();
+                    getLrcAccessKeyListener.onFailure();
                     return;
                 }
-                String url = String.format(Constant.URL_LRC_READ, candidate.getId(), candidate.getAccesskey());
-                getLrcUrlListener.onLrcUrl(url);
+                getLrcAccessKeyListener.onCandidateList(candidates);
             }
 
             @Override
             public void onAfterFailure() {
-                getLrcUrlListener.onFailure();
+                getLrcAccessKeyListener.onFailure();
             }
         });
     }
@@ -131,13 +121,27 @@ public class KuGouLrcUtil {
         });
     }
 
-    public interface GetLrcUrlListener {
+    public interface GetSongListListener {
         /**
-         * LRC url回传
+         * 歌曲列表回传
          *
-         * @param lrcUrl
+         * @param songSearchList
          */
-        void onLrcUrl(String lrcUrl);
+        void onSongList(List<SongSearch> songSearchList);
+
+        /**
+         * 读取失败
+         */
+        void onFailure();
+    }
+
+    public interface GetLrcAccessKeyListener {
+        /**
+         * LRC授权列表
+         *
+         * @param candidateList
+         */
+        void onCandidateList(List<LrcAccessResult.Candidate> candidateList);
 
         /**
          * 读取失败

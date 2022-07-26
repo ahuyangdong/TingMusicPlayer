@@ -1,9 +1,6 @@
 package com.dommy.music.bean;
 
-import com.dommy.retrofitframe.network.result.BaseResult;
-
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * 酷狗歌曲搜索结果对象
