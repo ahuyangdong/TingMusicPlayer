@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
+    android:paddingBottom="5dp"
     tools:context=".LyricFragment">
 
     <me.wcy.lrcview.LrcView
         android:id="@+id/lrc_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_lrc"
         app:lrcAnimationDuration="20"
         app:lrcCurrentTextColor="@color/progress_music"
         app:lrcDividerHeight="20dp"
@@ -32,6 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
         android:background="?attr/selectableItemBackground"
         android:src="@drawable/car_lyric" />
 </RelativeLayout>
