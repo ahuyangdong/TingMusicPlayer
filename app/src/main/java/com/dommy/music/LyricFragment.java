@@ -164,37 +164,28 @@ public class LyricFragment extends Fragment {
             @Override
             public void onSongList(List<SongSearch> songSearchList) {
                 LoadingDialog.close();
+                List<LrcSelect> lrcList = new ArrayList<>();
+                List<SongSearch> songSearchListNew = new ArrayList<>();
+                for (SongSearch songSearch : songSearchList) {
+                    if (CommonUtil.isNull(songSearch.getSQFileHash())) {
+                        continue;
+                    }
+                    LrcSelect lrcSelect = new LrcSelect(songSearch.getSongName(), songSearch.getSingerName());
+                    lrcList.add(lrcSelect);
+                    songSearchListNew.add(songSearch);
+                }
+                if (lrcList.size() == 0) {
+                    requestLrcFailure();
+                    return;
+                }
                 if (isUserDownload) {
                     // 弹窗
-                    List<LrcSelect> lrcList = new ArrayList<>();
-                    List<SongSearch> songSearchListNew = new ArrayList<>();
-                    for (SongSearch songSearch : songSearchList) {
-                        if (CommonUtil.isNull(songSearch.getSQFileHash())) {
-                            continue;
-                        }
-                        LrcSelect lrcSelect = new LrcSelect(songSearch.getSongName(), songSearch.getSingerName());
-                        lrcList.add(lrcSelect);
-                        songSearchListNew.add(songSearch);
-                    }
-                    if (lrcList.size() == 0) {
-                        requestLrcFailure();
-                        return;
-                    }
                     LyricFragment.this.songSearchList = songSearchListNew;
                     lrcSongSelectDialog.setList(lrcList);
                     lrcSongSelectDialog.show();
                 } else {
-                    SongSearch songSearch = songSearchList.get(0);
-                    if (songSearch == null) {
-                        requestLrcFailure();
-                        return;
-                    }
-                    String hash = songSearch.getSQFileHash();
-                    if (CommonUtil.isNull(hash)) {
-                        requestLrcFailure();
-                        return;
-                    }
-                    loadLrcAccessKey(hash);
+                    SongSearch songSearch = songSearchListNew.get(0);
+                    loadLrcAccessKey(songSearch.getSQFileHash());
                 }
             }
 
@@ -219,33 +210,29 @@ public class LyricFragment extends Fragment {
             @Override
             public void onCandidateList(List<LrcAccessResult.Candidate> candidateList) {
                 LoadingDialog.close();
+                List<LrcSelect> lrcList = new ArrayList<>();
+                List<LrcAccessResult.Candidate> candidateListNew = new ArrayList<>();
+                for (LrcAccessResult.Candidate candidate : candidateList) {
+                    if (CommonUtil.isNull(candidate.getAccesskey())
+                            || CommonUtil.isNull(candidate.getId())) {
+                        continue;
+                    }
+                    LrcSelect lrcSelect = new LrcSelect(candidate.getSinger() + "-" + candidate.getSong(),
+                            DateUtils.formatElapsedTime(candidate.getDuration() / 1000));
+                    lrcList.add(lrcSelect);
+                    candidateListNew.add(candidate);
+                }
+                if (lrcList.size() == 0) {
+                    requestLrcFailure();
+                    return;
+                }
                 if (isUserDownload) {
                     // 弹窗
-                    List<LrcSelect> lrcList = new ArrayList<>();
-                    List<LrcAccessResult.Candidate> candidateListNew = new ArrayList<>();
-                    for (LrcAccessResult.Candidate candidate : candidateList) {
-                        if (CommonUtil.isNull(candidate.getAccesskey())
-                                || CommonUtil.isNull(candidate.getId())) {
-                            continue;
-                        }
-                        LrcSelect lrcSelect = new LrcSelect(candidate.getSinger() + "-" + candidate.getSong(),
-                                DateUtils.formatElapsedTime(candidate.getDuration() / 1000));
-                        lrcList.add(lrcSelect);
-                        candidateListNew.add(candidate);
-                    }
-                    if (lrcList.size() == 0) {
-                        requestLrcFailure();
-                        return;
-                    }
                     LyricFragment.this.candidateList = candidateListNew;
                     lrcSelectDialog.setList(lrcList);
                     lrcSelectDialog.show();
                 } else {
-                    LrcAccessResult.Candidate candidate = candidateList.get(0);
-                    if (candidate == null) {
-                        requestLrcFailure();
-                        return;
-                    }
+                    LrcAccessResult.Candidate candidate = candidateListNew.get(0);
                     String url = String.format(Constant.URL_LRC_READ, candidate.getId(), candidate.getAccesskey());
                     loadLrc(url);
                 }
