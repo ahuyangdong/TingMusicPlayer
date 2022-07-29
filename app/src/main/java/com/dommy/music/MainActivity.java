@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
     }
 
     private void initView() {
+        tvSongName.requestFocus();
         loopStyle = PreferenceUtil.getInt(MainActivity.this, Constant.PREF_LOOP_STYLE, Constant.LOOP_ORDER);
         if (loopStyle == Constant.LOOP_ORDER) {
             btnLoop.setImageResource(R.drawable.car_main_circle_selector);

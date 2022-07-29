@@ -86,7 +86,7 @@ public class MediaUtil {
                     song.setFileName(trimUnknown(fileName));
                     song.setFilePath(filePath);
                     song.setDuration(duration);
-                    song.setFileNamePinyin(Pinyin.toPinyin(song.getFileName(),""));
+                    song.setFileNamePinyin(Pinyin.toPinyin(song.getFileName(), ""));
                     songList.add(song);
                 }
                 cursor.moveToNext();
@@ -115,20 +115,24 @@ public class MediaUtil {
      * @return
      */
     public static String getSongShowTitle(Song song) {
+        String title = null;
         if (!CommonUtil.isNull(song.getTitle()) && !CommonUtil.isNull(song.getAuthor()) &&
                 !CommonUtil.isMessyCode(song.getTitle()) && !CommonUtil.isMessyCode(song.getAuthor())) {
-            return song.getAuthor() + " - " + song.getTitle();
+            title = song.getAuthor() + " - " + song.getTitle();
+        } else if (!CommonUtil.isNull(song.getTitle()) && song.getTitle().contains("-")) {
+            title = song.getTitle();
+        } else if (!CommonUtil.isNull(song.getFileName()) && song.getFileName().contains("-")) {
+            title = song.getFileName().substring(0, song.getFileName().lastIndexOf("."));
+        } else if (!CommonUtil.isNull(song.getTitle())) {
+            title = song.getTitle();
         }
-        if (!CommonUtil.isNull(song.getTitle()) && song.getTitle().contains("-")) {
-            return song.getTitle();
+        if (title == null
+                || title.replace("-", "").length() > title.length() + 1
+                || title.contains("??")) {
+            // 名字出现了两次以上-，或出现多个问号
+            title = song.getFileName().substring(0, song.getFileName().lastIndexOf("."));
         }
-        if (!CommonUtil.isNull(song.getFileName()) && song.getFileName().contains("-")) {
-            return song.getFileName();
-        }
-        if (!CommonUtil.isNull(song.getTitle())) {
-            return song.getTitle();
-        }
-        return "";
+        return title;
     }
 
 
