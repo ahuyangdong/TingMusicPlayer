@@ -174,11 +174,18 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
      */
     @OnClick(R.id.btn_list_state)
     void toggleList() {
+        LyricFragment lyricFragment = getLyricFragment();
         if (recyclerView.getVisibility() == View.VISIBLE) {
             recyclerView.setVisibility(View.GONE);
+            if (lyricFragment != null) {
+                lyricFragment.setImgAlbumVisible(true);
+            }
             PreferenceUtil.setInt(MainActivity.this, Constant.PREF_LIST_VISIBLE, View.GONE);
         } else {
             recyclerView.setVisibility(View.VISIBLE);
+            if (lyricFragment != null) {
+                lyricFragment.setImgAlbumVisible(false);
+            }
             PreferenceUtil.setInt(MainActivity.this, Constant.PREF_LIST_VISIBLE, View.VISIBLE);
         }
     }
@@ -407,6 +414,9 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
         }
         LyricFragment lyricFragment = getLyricFragment();
         lyricFragment.setCurrentPlay(currentSong);
+        Bitmap albumBitmap = MediaUtil.loadCoverFromMediaStore(this, currentSong.getAlbumId());
+        lyricFragment.setImgAlbum(albumBitmap);
+        lyricFragment.setCursorText((currentPlay + 1) + "/" + mSongList.size());
     }
 
     @Override

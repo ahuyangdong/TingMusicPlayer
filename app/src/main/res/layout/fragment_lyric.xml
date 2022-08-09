@@ -4,27 +4,63 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_lrc"
     android:paddingBottom="5dp"
     tools:context=".LyricFragment">
 
-    <me.wcy.lrcview.LrcView
-        android:id="@+id/lrc_view"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_lrc"
-        app:lrcAnimationDuration="20"
-        app:lrcCurrentTextColor="@color/progress_music"
-        app:lrcDividerHeight="20dp"
-        app:lrcLabel="暂无歌词"
-        app:lrcNormalTextColor="@color/white"
-        app:lrcNormalTextSize="22sp"
-        app:lrcPadding="10dp"
-        app:lrcTextGravity="center"
-        app:lrcTextSize="26sp"
-        app:lrcTimeTextColor="@color/gray_text_light"
-        app:lrcTimeTextSize="16sp"
-        app:lrcTimelineColor="@color/progress_music"
-        app:lrcTimelineTextColor="@color/progress_music" />
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/linear_album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="120dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/img_album"
+                android:layout_width="@dimen/album_image_size"
+                android:layout_height="@dimen/album_image_size"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/default_post"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/txt_cursor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/cursor_top"
+                android:text="/"
+                android:textColor="@color/gray_text_light"
+                android:textSize="@dimen/txt_cursor" />
+        </LinearLayout>
+
+        <me.wcy.lrcview.LrcView
+            android:id="@+id/lrc_view"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:lrcAnimationDuration="20"
+            app:lrcCurrentTextColor="@color/progress_music"
+            app:lrcDividerHeight="20dp"
+            app:lrcLabel="暂无歌词"
+            app:lrcNormalTextColor="@color/white"
+            app:lrcNormalTextSize="22sp"
+            app:lrcPadding="10dp"
+            app:lrcTextGravity="center"
+            app:lrcTextSize="26sp"
+            app:lrcTimeTextColor="@color/gray_text_light"
+            app:lrcTimeTextSize="16sp"
+            app:lrcTimelineColor="@color/progress_music"
+            app:lrcTimelineTextColor="@color/progress_music" />
+
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/btn_lrc"

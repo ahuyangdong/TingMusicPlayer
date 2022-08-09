@@ -1,12 +1,16 @@
 package com.dommy.music;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -18,6 +22,7 @@ import com.dommy.music.util.Constant;
 import com.dommy.music.util.KuGouLrcUtil;
 import com.dommy.music.util.MediaUtil;
 import com.dommy.music.util.NetworkUtil;
+import com.dommy.music.util.PreferenceUtil;
 import com.dommy.music.widget.LoadingDialog;
 import com.dommy.music.widget.LrcSongSelectDialog;
 import com.dommy.retrofitframe.network.result.LrcAccessResult;
@@ -37,6 +42,12 @@ import me.wcy.lrcview.LrcView;
 public class LyricFragment extends Fragment {
     @BindView(R.id.lrc_view)
     LrcView lrcView; // 歌词控件
+    @BindView(R.id.linear_album)
+    LinearLayout linearAlbum; // 封面
+    @BindView(R.id.img_album)
+    ImageView imgAlbum; // 封面
+    @BindView(R.id.txt_cursor)
+    TextView tvCursor; // 当前序号
 
     private LyricFragment.OnFragmentInteractionListener mListener;
     private Song currentPlay; // 当前播放歌曲
@@ -68,6 +79,12 @@ public class LyricFragment extends Fragment {
     }
 
     private void initView() {
+        int listVisible = PreferenceUtil.getInt(getContext(), Constant.PREF_LIST_VISIBLE, View.VISIBLE);
+        if (listVisible == View.VISIBLE) {
+            setImgAlbumVisible(false);
+        } else {
+            setImgAlbumVisible(true);
+        }
         lrcView.setDraggable(true, new LrcView.OnPlayClickListener() {
             @Override
             public boolean onPlayClick(LrcView view, long time) {
@@ -279,6 +296,41 @@ public class LyricFragment extends Fragment {
         isUserDownload = false;
         lrcSongSelectDialog.close();
         lrcSelectDialog.close();
+    }
+
+    /**
+     * 设置专辑封面图象
+     *
+     * @param albumBitmap
+     */
+    public void setImgAlbum(Bitmap albumBitmap) {
+        if (albumBitmap == null) {
+            imgAlbum.setImageResource(R.drawable.default_post);
+        } else {
+            imgAlbum.setImageBitmap(albumBitmap);
+        }
+    }
+
+    /**
+     * 设置专辑控件是否可见
+     *
+     * @param isVisible
+     */
+    public void setImgAlbumVisible(boolean isVisible) {
+        if (isVisible) {
+            linearAlbum.setVisibility(View.VISIBLE);
+        } else {
+            linearAlbum.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 设置播放数值显示内容
+     *
+     * @param text
+     */
+    public void setCursorText(String text) {
+        tvCursor.setText(text);
     }
 
     @Override
