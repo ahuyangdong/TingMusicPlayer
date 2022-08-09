@@ -127,7 +127,7 @@ public class MediaUtil {
             title = song.getTitle();
         }
         if (title == null
-                || title.replace("-", "").length() > title.length() + 1
+                || title.replace("-", "").length() + 1 < title.length()
                 || title.contains("??")) {
             // 名字出现了两次以上-，或出现多个问号
             title = song.getFileName().substring(0, song.getFileName().lastIndexOf("."));
