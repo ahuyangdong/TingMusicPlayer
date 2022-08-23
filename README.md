@@ -23,7 +23,7 @@
 
 致谢：
 
-[QQ音乐HD（UI素材）]（https://y.qq.com/download/download.html）
+[QQ音乐HD（UI素材）](https://y.qq.com/download/download.html)
 
 [网易云音乐（UI素材）](https://music.163.com/#/download)
 
