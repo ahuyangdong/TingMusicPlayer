@@ -22,10 +22,17 @@
 
 
 致谢：
+
 [QQ音乐HD（UI素材）]（https://y.qq.com/download/download.html）
+
 [网易云音乐（UI素材）](https://music.163.com/#/download)
+
 [酷狗音乐（歌词下载）](https://www.kugou.com/)
+
 [TinyPinyin](https://github.com/promeG/TinyPinyin)
+
 [lrcview](https://github.com/wangchenyan/lrcview)
+
 [V-VisualizerView](https://github.com/Vension/V-VisualizerView)
+
 [AudioVisualizeView](https://github.com/GitHubZJY/AudioVisualizeView)
