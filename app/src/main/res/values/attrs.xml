@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="VisualizerView">
+        <!-- 音频块颜色 -->
+        <attr name="visual_color" format="reference|color" />
+        <attr name="visual_num" format="integer" />
+        <attr name="visual_margin" format="dimension" />
+    </declare-styleable>
+
+</resources>

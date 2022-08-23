@@ -3,8 +3,10 @@ package com.dommy.music.widget;
 import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.audiofx.Visualizer;
 import android.os.Handler;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -31,6 +33,7 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
     private static final int MSG_ERROR = 2;
     private Activity activity;
     private MediaPlayer mediaPlayer; // 媒体播放器
+    private Visualizer visualizer; //频谱器
 
     @BindView(R.id.seekbar_player)
     SeekBar seekBar; // 进度条
@@ -77,6 +80,21 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
                 handler.sendEmptyMessage(MSG_PROGRESS);
             }
         };
+
+        visualizer = new Visualizer(mediaPlayer.getAudioSessionId());
+        //采样 - 参数内必须是2的位数 - 如64,128,256,512,1024
+        visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+            @Override
+            public void onWaveFormDataCapture(Visualizer visualizer, byte[] waveform, int samplingRate) {
+            }
+
+            @Override
+            public void onFftDataCapture(Visualizer visualizer, byte[] fft, int samplingRate) {
+                onStateChangeListener.onFftDataCapture(fft);
+            }
+        }, Visualizer.getMaxCaptureRate() / 4, false, true);
+        visualizer.setEnabled(true);
     }
 
     @OnClick(R.id.btn_start)
@@ -156,6 +174,9 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
         }
         mediaPlayer.stop();
         mediaPlayer.release();
+
+        visualizer.setEnabled(false);
+        visualizer.release();
     }
 
     private void updateProgress() {
@@ -280,6 +301,13 @@ public class AudioPlayer implements MediaPlayer.OnBufferingUpdateListener, Media
          * @param newProgress
          */
         void progressChanged(int newProgress);
+
+        /**
+         * 频谱回传数据
+         *
+         * @param fft
+         */
+        void onFftDataCapture(byte[] fft);
     }
 
 }

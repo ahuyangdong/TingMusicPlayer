@@ -13,5 +13,6 @@
     <color name="transparent">#00000000</color>
     <color name="bg_album">#22979797</color>
     <color name="progress_music">#D86B44</color>
+    <color name="visualizer">#55ffffff</color>
     <color name="bg_lrc">#09000000</color>
 </resources>

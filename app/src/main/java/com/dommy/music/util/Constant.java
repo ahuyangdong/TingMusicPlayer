@@ -9,6 +9,7 @@ public class Constant {
     public static final String PREF_PLAY_TIME = "play_time"; // 播放时间
     public static final String PREF_LOOP_STYLE = "loop_style"; // 循环模式
     public static final String PREF_LIST_VISIBLE = "list_visible"; // 列表是否显示
+    public static final String PREF_VIEW_PAGE = "view_page"; // 当前视图编号
 
     public static final int REQ_READ_WRITE = 30002; // 读写权限申请
 

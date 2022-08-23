@@ -25,6 +25,7 @@ import com.dommy.music.util.NetworkUtil;
 import com.dommy.music.util.PreferenceUtil;
 import com.dommy.music.widget.LoadingDialog;
 import com.dommy.music.widget.LrcSongSelectDialog;
+import com.dommy.music.widget.VisualizerView;
 import com.dommy.retrofitframe.network.result.LrcAccessResult;
 
 import java.util.ArrayList;
@@ -48,6 +49,8 @@ public class LyricFragment extends Fragment {
     ImageView imgAlbum; // 封面
     @BindView(R.id.txt_cursor)
     TextView tvCursor; // 当前序号
+    @BindView(R.id.visualizer_view)
+    VisualizerView visualizerView; // 频谱
 
     private LyricFragment.OnFragmentInteractionListener mListener;
     private Song currentPlay; // 当前播放歌曲
@@ -151,6 +154,15 @@ public class LyricFragment extends Fragment {
      */
     public void setDuration(int duration) {
         lrcView.updateTime(duration);
+    }
+
+    /**
+     * 更新频谱
+     *
+     * @param fft
+     */
+    public void updateFft(byte[] fft) {
+        visualizerView.updateFft(fft);
     }
 
     /**

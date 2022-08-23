@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
         mainFragmentAdapter = new MainFragmentAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mainFragmentAdapter);
         viewPager.setOffscreenPageLimit(2);
+        viewPager.addOnPageChangeListener(pageChangeListener);
     }
 
     private void loadData() {
@@ -315,6 +316,23 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
         return (LyricFragment) fragments.get(1);
     }
 
+    private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            PreferenceUtil.setInt(MainActivity.this, Constant.PREF_VIEW_PAGE, position);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
+
     private AudioPlayer.OnStateChangeListener onStateChangeListener = new AudioPlayer.OnStateChangeListener() {
         @Override
         public void start() {
@@ -344,6 +362,14 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
                 lyricFragment.setDuration(newProgress);
             }
             PreferenceUtil.setInt(MainActivity.this, Constant.PREF_PLAY_TIME, newProgress);
+        }
+
+        @Override
+        public void onFftDataCapture(byte[] fft) {
+            LyricFragment lyricFragment = getLyricFragment();
+            if (lyricFragment != null) {
+                lyricFragment.updateFft(fft);
+            }
         }
     };
 
@@ -409,6 +435,8 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
 
     @Override
     public void onLyricLoaded() {
+        int defaultPage = PreferenceUtil.getInt(MainActivity.this, Constant.PREF_VIEW_PAGE, 0);
+        viewPager.setCurrentItem(defaultPage);
         if (currentSong == null) {
             return;
         }

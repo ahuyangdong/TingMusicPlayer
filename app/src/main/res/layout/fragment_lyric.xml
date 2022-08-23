@@ -41,24 +41,41 @@
                 android:textSize="@dimen/txt_cursor" />
         </LinearLayout>
 
-        <me.wcy.lrcview.LrcView
-            android:id="@+id/lrc_view"
-            android:layout_width="0dip"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            app:lrcAnimationDuration="20"
-            app:lrcCurrentTextColor="@color/progress_music"
-            app:lrcDividerHeight="20dp"
-            app:lrcLabel="暂无歌词"
-            app:lrcNormalTextColor="@color/white"
-            app:lrcNormalTextSize="22sp"
-            app:lrcPadding="10dp"
-            app:lrcTextGravity="center"
-            app:lrcTextSize="26sp"
-            app:lrcTimeTextColor="@color/gray_text_light"
-            app:lrcTimeTextSize="16sp"
-            app:lrcTimelineColor="@color/progress_music"
-            app:lrcTimelineTextColor="@color/progress_music" />
+            android:orientation="vertical">
+
+            <me.wcy.lrcview.LrcView
+                android:id="@+id/lrc_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="4"
+                app:lrcAnimationDuration="20"
+                app:lrcCurrentTextColor="@color/progress_music"
+                app:lrcDividerHeight="20dp"
+                app:lrcLabel="暂无歌词"
+                app:lrcNormalTextColor="@color/white"
+                app:lrcNormalTextSize="22sp"
+                app:lrcPadding="10dp"
+                app:lrcTextGravity="center"
+                app:lrcTextSize="26sp"
+                app:lrcTimeTextColor="@color/gray_text_light"
+                app:lrcTimeTextSize="16sp"
+                app:lrcTimelineColor="@color/progress_music"
+                app:lrcTimelineTextColor="@color/progress_music" />
+
+            <com.dommy.music.widget.VisualizerView
+                android:id="@+id/visualizer_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                app:visual_color="@color/visualizer"
+                app:visual_margin="2dp"
+                app:visual_num="64" />
+        </LinearLayout>
 
     </LinearLayout>
 
