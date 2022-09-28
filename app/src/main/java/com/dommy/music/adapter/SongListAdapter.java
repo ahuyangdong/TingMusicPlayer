@@ -35,7 +35,7 @@ public class SongListAdapter extends BaseQuickAdapter<Song, BaseViewHolder> {
         helper.setText(R.id.txt_title, item.getFileName());
         helper.setText(R.id.txt_duration, DateUtils.formatElapsedTime(item.getDuration() / 1000));
         if (item.getAlbumId() != null && item.getAlbumId() > 0) {
-            Bitmap albumBitmap = MediaUtil.loadCoverFromMediaStore(mContext, item.getAlbumId());
+            Bitmap albumBitmap = MediaUtil.loadCover(mContext, item);
             if (albumBitmap == null) {
                 helper.setImageResource(R.id.img_album, R.drawable.default_post);
             } else {

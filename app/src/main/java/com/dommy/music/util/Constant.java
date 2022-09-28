@@ -39,4 +39,8 @@ public class Constant {
      * 读取LRC歌词文本
      */
     public final static String URL_LRC_READ = "http://lyrics.kugou.com/download?&fmt=lrc&ver=1&id=%s&accesskey=%s";
+    /**
+     * 读取封面图片
+     */
+    public final static String URL_COVER = "https://wwwapi.kugou.com/yy/index.php?r=play/getdata&hash=%s&dfid=34cusg3MmT2Y0YrzRX1dmvjH&appid=1014&mid=a772d46df5e2959c2c479a2941de00c2&platid=4";
 }

@@ -36,6 +36,8 @@ public class LrcSongSelectDialog {
     private LinearLayoutManager layoutManager;
     private LrcSelectListAdapter lrcSelectListAdapter;
 
+    private boolean isLrc; // 判断是lrc还是cover
+
     public LrcSongSelectDialog(Context context, OnClickListener listener) {
         this.context = context;
         this.listener = listener;
@@ -87,14 +89,22 @@ public class LrcSongSelectDialog {
         dialog.show();
     }
 
+    public boolean isLrc() {
+        return isLrc;
+    }
+
+    public void setLrc(boolean lrc) {
+        isLrc = lrc;
+    }
+
     private BaseQuickAdapter.OnItemClickListener itemClickListener = new BaseQuickAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-            listener.onConfirm(position);
+            listener.onConfirm(position, isLrc);
         }
     };
 
     public interface OnClickListener {
-        void onConfirm(int position);
+        void onConfirm(int position, boolean isLrc);
     }
 }

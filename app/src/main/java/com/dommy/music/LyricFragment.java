@@ -2,6 +2,7 @@ package com.dommy.music;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Base64;
@@ -14,9 +15,13 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.Target;
 import com.dommy.music.bean.LrcSelect;
 import com.dommy.music.bean.Song;
 import com.dommy.music.bean.SongSearch;
+import com.dommy.music.service.DBService;
 import com.dommy.music.util.CommonUtil;
 import com.dommy.music.util.Constant;
 import com.dommy.music.util.KuGouLrcUtil;
@@ -25,9 +30,12 @@ import com.dommy.music.util.NetworkUtil;
 import com.dommy.music.util.PreferenceUtil;
 import com.dommy.music.widget.LoadingDialog;
 import com.dommy.music.widget.LrcSongSelectDialog;
+import com.dommy.music.widget.NoticeToast;
 import com.dommy.music.widget.VisualizerView;
 import com.dommy.retrofitframe.network.result.LrcAccessResult;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +68,7 @@ public class LyricFragment extends Fragment {
     private LrcSongSelectDialog lrcSelectDialog;
     private boolean isUserDownload; // 是否为用户主动下载歌词
     private String lrcFilePath; // lrc歌词文件地址
+    private String coverFilePath; // 封面文件地址
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,24 +107,33 @@ public class LyricFragment extends Fragment {
         // 选择歌曲
         lrcSongSelectDialog = new LrcSongSelectDialog(getContext(), new LrcSongSelectDialog.OnClickListener() {
             @Override
-            public void onConfirm(int position) {
+            public void onConfirm(int position, boolean isLrc) {
                 SongSearch songSearch = songSearchList.get(position);
                 if (songSearch == null) {
                     return;
                 }
                 String hash = songSearch.getSQFileHash();
                 if (CommonUtil.isNull(hash)) {
-                    requestLrcFailure();
+                    if (isLrc) {
+                        requestLrcFailure();
+                    } else {
+                        requestCoverFailure();
+                    }
                     return;
                 }
-                loadLrcAccessKey(hash);
+                if (isLrc) {
+                    loadLrcAccessKey(hash);
+                } else {
+                    String url = String.format(Constant.URL_COVER, hash);
+                    loadCover(url);
+                }
                 lrcSongSelectDialog.close();
             }
         });
         // 选择歌词
         lrcSelectDialog = new LrcSongSelectDialog(getContext(), new LrcSongSelectDialog.OnClickListener() {
             @Override
-            public void onConfirm(int position) {
+            public void onConfirm(int position, boolean isLrc) {
                 LrcAccessResult.Candidate candidate = candidateList.get(position);
                 if (candidate == null) {
                     requestLrcFailure();
@@ -133,6 +151,25 @@ public class LyricFragment extends Fragment {
     void updateLrc() {
         isUserDownload = true;
         loadLrc();
+    }
+
+    /**
+     * 更新封面
+     */
+    @OnClick(R.id.img_album)
+    public void updateCover() {
+        if (currentPlay == null) {
+            return;
+        }
+        if (!NetworkUtil.isNetworkConnected(getContext())) {
+            NoticeToast.show(getContext(), "暂无封面，请连接网络后重试");
+            return;
+        }
+        String filePath = currentPlay.getFilePath();
+        coverFilePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".jpg";
+        isUserDownload = true;
+        LoadingDialog.show(getContext());
+        showSongSelect(false);
     }
 
     /**
@@ -188,6 +225,15 @@ public class LyricFragment extends Fragment {
         }
         lrcFilePath = filePath;
         // 读取网络歌词
+        showSongSelect(true);
+    }
+
+    /**
+     * 显示歌曲选择列表
+     *
+     * @param isLrc
+     */
+    private void showSongSelect(boolean isLrc) {
         String showTitle = MediaUtil.getSongShowTitle(currentPlay);
         KuGouLrcUtil.getSongSearchList(getContext(), showTitle, new KuGouLrcUtil.GetSongListListener() {
             @Override
@@ -204,24 +250,40 @@ public class LyricFragment extends Fragment {
                     songSearchListNew.add(songSearch);
                 }
                 if (lrcList.size() == 0) {
-                    requestLrcFailure();
+                    if (isLrc) {
+                        requestLrcFailure();
+                    } else {
+                        requestCoverFailure();
+                    }
                     return;
                 }
+
                 if (isUserDownload) {
                     // 弹窗
                     LyricFragment.this.songSearchList = songSearchListNew;
                     lrcSongSelectDialog.setList(lrcList);
+                    lrcSongSelectDialog.setLrc(isLrc);
                     lrcSongSelectDialog.show();
                 } else {
-                    SongSearch songSearch = songSearchListNew.get(0);
-                    loadLrcAccessKey(songSearch.getSQFileHash());
+                    if (isLrc) {
+                        SongSearch songSearch = songSearchListNew.get(0);
+                        loadLrcAccessKey(songSearch.getSQFileHash());
+                    } else {
+                        SongSearch songSearch = songSearchListNew.get(0);
+                        String url = String.format(Constant.URL_COVER, songSearch.getSQFileHash());
+                        loadCover(url);
+                    }
                 }
             }
 
             @Override
             public void onFailure() {
                 LoadingDialog.close();
-                requestLrcFailure();
+                if (isLrc) {
+                    requestLrcFailure();
+                } else {
+                    requestCoverFailure();
+                }
             }
         });
     }
@@ -299,6 +361,70 @@ public class LyricFragment extends Fragment {
         });
     }
 
+    /**
+     * 加载封面
+     *
+     * @param coverGetUrl
+     */
+    private void loadCover(String coverGetUrl) {
+        if (isUserDownload) {
+            LoadingDialog.show(getContext());
+        }
+        KuGouLrcUtil.getCoverUrl(getContext(), coverGetUrl, new KuGouLrcUtil.GetCoverListener() {
+
+            @Override
+            public void onCoverLoad(String coverUrl) {
+                LoadingDialog.close();
+                readAndSaveCover(coverUrl);
+            }
+
+            @Override
+            public void onFailure() {
+                LoadingDialog.close();
+                requestCoverFailure();
+            }
+        });
+    }
+
+    /**
+     * 读取并保存封面
+     *
+     * @param coverUrl
+     */
+    private void readAndSaveCover(String coverUrl) {
+        Glide.with(getContext()).load(coverUrl).asBitmap()
+                .into(new BitmapImageViewTarget(imgAlbum) {
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        if (resource == null) {
+                            requestCoverFailure();
+                            return;
+                        }
+                        imgAlbum.setImageBitmap(resource);
+                        MediaUtil.saveCoverFile(coverFilePath, resource);
+                        mListener.onCurrentCoverUpdate();
+                    }
+                });
+    }
+
+    /**
+     * 加载封面失败
+     */
+    private void requestCoverFailure() {
+        if (isUserDownload) {
+            if (NetworkUtil.isNetworkConnected(getContext())) {
+                NoticeToast.show(getContext(), "暂无封面");
+            } else {
+                NoticeToast.show(getContext(), "暂无封面，请连接网络后重试");
+            }
+            isUserDownload = false;
+        }
+        imgAlbum.setImageResource(R.drawable.default_post);
+    }
+
+    /**
+     * 加载歌词失败
+     */
     private void requestLrcFailure() {
         if (NetworkUtil.isNetworkConnected(getContext())) {
             lrcView.loadLrc("[00:00.01]暂无歌词");
@@ -318,6 +444,7 @@ public class LyricFragment extends Fragment {
     public void setImgAlbum(Bitmap albumBitmap) {
         if (albumBitmap == null) {
             imgAlbum.setImageResource(R.drawable.default_post);
+            showSongSelect(false);
         } else {
             imgAlbum.setImageBitmap(albumBitmap);
         }
@@ -371,5 +498,10 @@ public class LyricFragment extends Fragment {
          * @param duration
          */
         void onLrcDragged(int duration);
+
+        /**
+         * 专辑封面更新
+         */
+        void onCurrentCoverUpdate();
     }
 }

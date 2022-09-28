@@ -13,6 +13,8 @@ import com.dommy.music.bean.Song;
 import com.github.promeg.pinyinhelper.Pinyin;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +145,7 @@ public class MediaUtil {
      * @param albumId
      * @return
      */
-    public static Bitmap loadCoverFromMediaStore(Context mContext, Long albumId) {
+    private static Bitmap loadCoverFromMediaStore(Context mContext, Long albumId) {
         ContentResolver resolver = mContext.getContentResolver();
         Uri uri = getMediaStoreAlbumCoverUri(albumId);
         InputStream is;
@@ -160,5 +162,52 @@ public class MediaUtil {
     private static Uri getMediaStoreAlbumCoverUri(Long albumId) {
         Uri artworkUri = Uri.parse("content://media/external/audio/albumart");
         return ContentUris.withAppendedId(artworkUri, albumId);
+    }
+
+    /**
+     * 加载封面
+     *
+     * @param mContext
+     * @param song
+     * @return
+     */
+    public static Bitmap loadCover(Context mContext, Song song) {
+        String filePath = song.getFilePath();
+        filePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".jpg";
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        if (bitmap != null) {
+            return bitmap;
+        }
+        bitmap = loadCoverFromMediaStore(mContext, song.getAlbumId());
+        if (bitmap == null) {
+            return bitmap;
+        }
+        saveCoverFile(filePath, bitmap);
+        return bitmap;
+    }
+
+    /**
+     * 保存封面图片
+     *
+     * @param filePath
+     * @param bitmap
+     */
+    public static void saveCoverFile(String filePath, Bitmap bitmap) {
+        FileOutputStream fos = null;
+        try {
+            // 存入本地
+            fos = new FileOutputStream(filePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+            }
+        }
     }
 }

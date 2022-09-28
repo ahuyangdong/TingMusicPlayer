@@ -20,6 +20,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 /**
@@ -55,6 +56,14 @@ public class DiskFragment extends Fragment {
             mListener.onDiskLoaded();
         }
         return view;
+    }
+
+    /**
+     * 更新封面
+     */
+    @OnClick(R.id.img_album)
+    public void updateCover() {
+        mListener.onDiskUpdateCover();
     }
 
     /**
@@ -121,5 +130,10 @@ public class DiskFragment extends Fragment {
          * Fragment已加载
          */
         void onDiskLoaded();
+
+        /**
+         * 更新封面
+         */
+        void onDiskUpdateCover();
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.dommy.music.bean.SongSearch;
 import com.dommy.retrofitframe.network.RetrofitRequest;
+import com.dommy.retrofitframe.network.result.CoverGetResult;
 import com.dommy.retrofitframe.network.result.LrcAccessResult;
 import com.dommy.retrofitframe.network.result.LrcGetResult;
 import com.dommy.retrofitframe.network.result.SongSearchResult;
@@ -121,6 +122,35 @@ public class KuGouLrcUtil {
         });
     }
 
+    /**
+     * 读取cover专辑封面
+     *
+     * @param context
+     * @param coverGetUrl
+     * @param getCoverListener
+     */
+    public static void getCoverUrl(Context context, String coverGetUrl, GetCoverListener getCoverListener) {
+        RetrofitRequest.sendGetRequest(coverGetUrl, CoverGetResult.class, new RetrofitRequest.ResultHandler<CoverGetResult>(context) {
+            @Override
+            public void onBeforeResult() {
+            }
+
+            @Override
+            public void onResult(CoverGetResult coverGetResult) {
+                if (coverGetResult == null || coverGetResult.getData() == null) {
+                    getCoverListener.onFailure();
+                    return;
+                }
+                getCoverListener.onCoverLoad(coverGetResult.getData().getImg());
+            }
+
+            @Override
+            public void onAfterFailure() {
+                getCoverListener.onFailure();
+            }
+        });
+    }
+
     public interface GetSongListListener {
         /**
          * 歌曲列表回传
@@ -156,6 +186,20 @@ public class KuGouLrcUtil {
          * @param lrc
          */
         void onLrcLoad(String lrc);
+
+        /**
+         * 读取失败
+         */
+        void onFailure();
+    }
+
+    public interface GetCoverListener {
+        /**
+         * Cover读取成功
+         *
+         * @param coverUrl
+         */
+        void onCoverLoad(String coverUrl);
 
         /**
          * 读取失败

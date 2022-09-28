@@ -426,11 +426,17 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
         }
         // 加载播放页数据
         DiskFragment diskFragment = getDiskFragment();
-        Bitmap albumBitmap = MediaUtil.loadCoverFromMediaStore(this, currentSong.getAlbumId());
+        Bitmap albumBitmap = MediaUtil.loadCover(this, currentSong);
         diskFragment.setImgAlbum(albumBitmap);
         diskFragment.setCursorText((currentPlay + 1) + "/" + mSongList.size());
         diskFragment.stopAnimation();
         diskFragment.startAnimation(true);
+    }
+
+    @Override
+    public void onDiskUpdateCover() {
+        LyricFragment lyricFragment = getLyricFragment();
+        lyricFragment.updateCover();
     }
 
     @Override
@@ -442,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
         }
         LyricFragment lyricFragment = getLyricFragment();
         lyricFragment.setCurrentPlay(currentSong);
-        Bitmap albumBitmap = MediaUtil.loadCoverFromMediaStore(this, currentSong.getAlbumId());
+        Bitmap albumBitmap = MediaUtil.loadCover(this, currentSong);
         lyricFragment.setImgAlbum(albumBitmap);
         lyricFragment.setCursorText((currentPlay + 1) + "/" + mSongList.size());
     }
@@ -450,5 +456,13 @@ public class MainActivity extends AppCompatActivity implements DiskFragment.OnFr
     @Override
     public void onLrcDragged(int duration) {
         audioPlayer.seekTo(duration);
+    }
+
+    @Override
+    public void onCurrentCoverUpdate() {
+        songListAdapter.setData(currentPlay, currentSong);
+        DiskFragment diskFragment = getDiskFragment();
+        Bitmap albumBitmap = MediaUtil.loadCover(this, currentSong);
+        diskFragment.setImgAlbum(albumBitmap);
     }
 }
