@@ -444,6 +444,8 @@ public class LyricFragment extends Fragment {
     public void setImgAlbum(Bitmap albumBitmap) {
         if (albumBitmap == null) {
             imgAlbum.setImageResource(R.drawable.default_post);
+            String filePath = currentPlay.getFilePath();
+            coverFilePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".jpg";
             showSongSelect(false);
         } else {
             imgAlbum.setImageBitmap(albumBitmap);
