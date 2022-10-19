@@ -37,6 +37,7 @@ public class LrcSongSelectDialog {
     private LrcSelectListAdapter lrcSelectListAdapter;
 
     private boolean isLrc; // 判断是lrc还是cover
+    private String coverFilePath; // cover文件地址
 
     public LrcSongSelectDialog(Context context, OnClickListener listener) {
         this.context = context;
@@ -97,14 +98,18 @@ public class LrcSongSelectDialog {
         isLrc = lrc;
     }
 
+    public void setCoverFilePath(String coverFilePath) {
+        this.coverFilePath = coverFilePath;
+    }
+
     private BaseQuickAdapter.OnItemClickListener itemClickListener = new BaseQuickAdapter.OnItemClickListener() {
         @Override
         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-            listener.onConfirm(position, isLrc);
+            listener.onConfirm(position, isLrc, coverFilePath);
         }
     };
 
     public interface OnClickListener {
-        void onConfirm(int position, boolean isLrc);
+        void onConfirm(int position, boolean isLrc, String coverFilePath);
     }
 }

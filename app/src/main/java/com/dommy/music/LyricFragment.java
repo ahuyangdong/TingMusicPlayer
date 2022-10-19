@@ -2,7 +2,6 @@ package com.dommy.music;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Base64;
@@ -17,11 +16,9 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.Target;
 import com.dommy.music.bean.LrcSelect;
 import com.dommy.music.bean.Song;
 import com.dommy.music.bean.SongSearch;
-import com.dommy.music.service.DBService;
 import com.dommy.music.util.CommonUtil;
 import com.dommy.music.util.Constant;
 import com.dommy.music.util.KuGouLrcUtil;
@@ -34,8 +31,6 @@ import com.dommy.music.widget.NoticeToast;
 import com.dommy.music.widget.VisualizerView;
 import com.dommy.retrofitframe.network.result.LrcAccessResult;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +63,6 @@ public class LyricFragment extends Fragment {
     private LrcSongSelectDialog lrcSelectDialog;
     private boolean isUserDownload; // 是否为用户主动下载歌词
     private String lrcFilePath; // lrc歌词文件地址
-    private String coverFilePath; // 封面文件地址
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,7 +101,7 @@ public class LyricFragment extends Fragment {
         // 选择歌曲
         lrcSongSelectDialog = new LrcSongSelectDialog(getContext(), new LrcSongSelectDialog.OnClickListener() {
             @Override
-            public void onConfirm(int position, boolean isLrc) {
+            public void onConfirm(int position, boolean isLrc, String coverFilePath) {
                 SongSearch songSearch = songSearchList.get(position);
                 if (songSearch == null) {
                     return;
@@ -125,7 +119,7 @@ public class LyricFragment extends Fragment {
                     loadLrcAccessKey(hash);
                 } else {
                     String url = String.format(Constant.URL_COVER, hash);
-                    loadCover(url);
+                    loadCover(url, coverFilePath);
                 }
                 lrcSongSelectDialog.close();
             }
@@ -133,7 +127,7 @@ public class LyricFragment extends Fragment {
         // 选择歌词
         lrcSelectDialog = new LrcSongSelectDialog(getContext(), new LrcSongSelectDialog.OnClickListener() {
             @Override
-            public void onConfirm(int position, boolean isLrc) {
+            public void onConfirm(int position, boolean isLrc, String coverFilePath) {
                 LrcAccessResult.Candidate candidate = candidateList.get(position);
                 if (candidate == null) {
                     requestLrcFailure();
@@ -165,8 +159,6 @@ public class LyricFragment extends Fragment {
             NoticeToast.show(getContext(), "暂无封面，请连接网络后重试");
             return;
         }
-        String filePath = currentPlay.getFilePath();
-        coverFilePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".jpg";
         isUserDownload = true;
         LoadingDialog.show(getContext());
         showSongSelect(false);
@@ -235,6 +227,7 @@ public class LyricFragment extends Fragment {
      */
     private void showSongSelect(boolean isLrc) {
         String showTitle = MediaUtil.getSongShowTitle(currentPlay);
+        String coverFilePath = getCoverFilePath();
         KuGouLrcUtil.getSongSearchList(getContext(), showTitle, new KuGouLrcUtil.GetSongListListener() {
             @Override
             public void onSongList(List<SongSearch> songSearchList) {
@@ -263,6 +256,7 @@ public class LyricFragment extends Fragment {
                     LyricFragment.this.songSearchList = songSearchListNew;
                     lrcSongSelectDialog.setList(lrcList);
                     lrcSongSelectDialog.setLrc(isLrc);
+                    lrcSongSelectDialog.setCoverFilePath(coverFilePath);
                     lrcSongSelectDialog.show();
                 } else {
                     if (isLrc) {
@@ -271,7 +265,7 @@ public class LyricFragment extends Fragment {
                     } else {
                         SongSearch songSearch = songSearchListNew.get(0);
                         String url = String.format(Constant.URL_COVER, songSearch.getSQFileHash());
-                        loadCover(url);
+                        loadCover(url, coverFilePath);
                     }
                 }
             }
@@ -365,8 +359,9 @@ public class LyricFragment extends Fragment {
      * 加载封面
      *
      * @param coverGetUrl
+     * @param coverFilePath
      */
-    private void loadCover(String coverGetUrl) {
+    private void loadCover(String coverGetUrl, String coverFilePath) {
         if (isUserDownload) {
             LoadingDialog.show(getContext());
         }
@@ -375,7 +370,7 @@ public class LyricFragment extends Fragment {
             @Override
             public void onCoverLoad(String coverUrl) {
                 LoadingDialog.close();
-                readAndSaveCover(coverUrl);
+                readAndSaveCover(coverUrl, coverFilePath);
             }
 
             @Override
@@ -390,8 +385,9 @@ public class LyricFragment extends Fragment {
      * 读取并保存封面
      *
      * @param coverUrl
+     * @param coverFilePath
      */
-    private void readAndSaveCover(String coverUrl) {
+    private void readAndSaveCover(String coverUrl, String coverFilePath) {
         Glide.with(getContext()).load(coverUrl).asBitmap()
                 .into(new BitmapImageViewTarget(imgAlbum) {
                     @Override
@@ -400,8 +396,9 @@ public class LyricFragment extends Fragment {
                             requestCoverFailure();
                             return;
                         }
-                        imgAlbum.setImageBitmap(resource);
                         MediaUtil.saveCoverFile(coverFilePath, resource);
+                        Bitmap albumBitmap = MediaUtil.loadCover(getContext(), currentPlay);
+                        setImgAlbum(albumBitmap);
                         mListener.onCurrentCoverUpdate();
                     }
                 });
@@ -444,8 +441,6 @@ public class LyricFragment extends Fragment {
     public void setImgAlbum(Bitmap albumBitmap) {
         if (albumBitmap == null) {
             imgAlbum.setImageResource(R.drawable.default_post);
-            String filePath = currentPlay.getFilePath();
-            coverFilePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".jpg";
             showSongSelect(false);
         } else {
             imgAlbum.setImageBitmap(albumBitmap);
@@ -472,6 +467,17 @@ public class LyricFragment extends Fragment {
      */
     public void setCursorText(String text) {
         tvCursor.setText(text);
+    }
+
+    /**
+     * 返回当前播放歌曲的封面文件地址
+     *
+     * @return
+     */
+    private String getCoverFilePath() {
+        String filePath = currentPlay.getFilePath();
+        String coverFilePath = filePath.substring(0, filePath.lastIndexOf(".")) + ".jpg";
+        return coverFilePath;
     }
 
     @Override
